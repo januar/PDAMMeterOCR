@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PDAM Meter OCR</string>
+    <string name="splash_screen">copyright by xxx</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_full_screen">PDAM Meter OCR</string>
+    <string name="splash_screen_content_desc">splash image</string>
+    <string name="title_activity_capture">CaptureActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="btn_capture">Capture Picture</string>
+
+</resources>
