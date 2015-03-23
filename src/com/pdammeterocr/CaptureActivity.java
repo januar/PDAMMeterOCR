@@ -17,7 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.pdammeterocr.camera.*;
@@ -27,9 +28,6 @@ public class CaptureActivity extends Activity {
 	public Camera mCamera;
 	public CameraPreview mPreview;
 	
-	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-	private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
-	private Uri fileUri;
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final String APP_IMAGE_PATH = "PDAM Meter OCR";
 	
@@ -39,7 +37,9 @@ public class CaptureActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_capture);
-		
+		Window window = getWindow();
+	    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	    
 		// Create an instance of Camera
         mCamera = CameraConfiguration.getCameraInstance();
 
