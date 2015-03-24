@@ -44,9 +44,11 @@ public class CaptureActivity extends Activity {
         mCamera = CameraConfiguration.getCameraInstance();
 
         // Create our Preview view and set it as the content of our activity.
-        mPreview = new CameraPreview(this, mCamera);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-        preview.addView(mPreview);
+        mPreview = (CameraPreview)findViewById(R.id.mPreview);
+        mPreview.mCamera = mCamera;
+        mPreview.initCamera(mCamera, getApplication());
+        /*FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(mPreview);*/
 	}
 
 	@Override

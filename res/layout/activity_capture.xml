@@ -10,6 +10,17 @@
     android:layout_height="fill_parent"
     android:layout_weight="1"
     >
+    
+      <com.pdammeterocr.camera.CameraPreview 
+          android:id="@+id/mPreview"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"/>
+      
+      <com.pdammeterocr.camera.CameraFrame 
+	      android:id="@+id/cameraframe_view"
+	      android:layout_width="fill_parent"
+	      android:layout_height="fill_parent"
+	      android:background="#0000"/>
   </FrameLayout>
   
   <RelativeLayout android:id="@+id/button_layout"

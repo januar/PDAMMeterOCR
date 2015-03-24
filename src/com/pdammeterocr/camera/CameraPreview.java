@@ -25,6 +25,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	
 	public static final String TAG = "PDAMMeterOCRCamera";
 	private Point cameraResolution;
+	public CameraConfiguration cameraConfig;
+	
+	/**
+	 * @param context
+	 */
+	public CameraPreview(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
 	
 	/**
 	 * @param context
@@ -32,6 +41,29 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public CameraPreview(Context context, Camera camera) {
 		super(context);
 		// TODO Auto-generated constructor stub
+		initCamera(camera, context);
+	}
+
+	/**
+	 * @param context
+	 * @param attrs
+	 */
+	public CameraPreview(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param context
+	 * @param attrs
+	 * @param defStyle
+	 */
+	public CameraPreview(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public void initCamera(Camera camera, Context context) {
 		mCamera = camera;
 		
 		// Install a SurfaceHolder.Callback so we get notified when the
@@ -59,25 +91,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Log.i(TAG, "Screen resolution: " + screenResolution);
         cameraResolution = CameraConfiguration.findBestPreviewSizeValue(parameters, screenResolution);
         Log.i(TAG, "Camera resolution: " + cameraResolution);
-	}
-
-	/**
-	 * @param context
-	 * @param attrs
-	 */
-	public CameraPreview(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param context
-	 * @param attrs
-	 * @param defStyle
-	 */
-	public CameraPreview(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

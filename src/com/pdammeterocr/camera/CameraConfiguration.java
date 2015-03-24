@@ -11,6 +11,8 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class CameraConfiguration {
 	private static final String TAG = "CameraConfiguration";
@@ -27,9 +29,12 @@ public class CameraConfiguration {
 	private static final int MAX_FRAME_HEIGHT = 600; // originally 360
 	
 	private Rect framingRect;
+	private Camera camera;
+	private Context context;
 	
-	public CameraConfiguration() {
+	public CameraConfiguration(Context context) {
 		// TODO Auto-generated constructor stub
+		this.context = context;
 	}
 
 	/** A safe way to get an instance of the Camera object. */
@@ -129,6 +134,25 @@ public class CameraConfiguration {
 		return bestSize;
 	}
 	
+	public Point getScreenResolution() {
+		WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = manager.getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
+        // We're landscape-only, and have apparently seen issues with display thinking it's portrait 
+        // when waking from sleep. If it's not landscape, assume it's mistaken and reverse them:
+        if (width < height) {
+          Log.i(TAG, "Display reports portrait orientation; assuming this is incorrect");
+          int temp = width;
+          width = height;
+          height = temp;
+        }
+        
+        Point screenResolution = new Point(width, height);
+        
+        return screenResolution;
+	}
+	
 	/**
 	   * Calculates the framing rect which the UI should draw to show the user where to place the
 	   * barcode. This target helps with alignment as well as forces the user to hold the device
@@ -141,7 +165,7 @@ public class CameraConfiguration {
 	      if (camera == null) {
 	        return null;
 	      }
-	      Point screenResolution = configManager.getScreenResolution();
+	      Point screenResolution = getScreenResolution();
 	      if (screenResolution == null) {
 	        // Called early, before init even finished
 	        return null;
