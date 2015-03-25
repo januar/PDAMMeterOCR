@@ -28,9 +28,14 @@ public class CameraConfiguration {
 	private static final int MAX_FRAME_WIDTH = 800; // originally 480
 	private static final int MAX_FRAME_HEIGHT = 600; // originally 360
 	
+	private int requestedFramingRectWidth;
+	private int requestedFramingRectHeight;
+	private Rect framingRectInPreview;
+	
 	private Rect framingRect;
 	private Camera camera;
 	private Context context;
+	private boolean initialized;
 	
 	public CameraConfiguration(Context context) {
 		// TODO Auto-generated constructor stub
@@ -46,6 +51,11 @@ public class CameraConfiguration {
 			// Camera is not available (in use or does not exist)
 		}
 		return c; // returns null if camera is unavailable
+	}
+	
+	public void setCamera(Camera camera) {
+		this.camera = camera;
+		initialized = true;
 	}
 
 	/** Check if this device has a camera */
@@ -149,44 +159,103 @@ public class CameraConfiguration {
         }
         
         Point screenResolution = new Point(width, height);
-        
+        Log.d("log", "Resolution width: " + width + " height: " + height);
         return screenResolution;
 	}
 	
 	/**
-	   * Calculates the framing rect which the UI should draw to show the user where to place the
-	   * barcode. This target helps with alignment as well as forces the user to hold the device
-	   * far enough away to ensure the image will be in focus.
-	   *
-	   * @return The rectangle to draw on screen in window coordinates.
-	   */
-	  public synchronized Rect getFramingRect() {
-	    if (framingRect == null) {
-	      if (camera == null) {
-	        return null;
-	      }
-	      Point screenResolution = getScreenResolution();
-	      if (screenResolution == null) {
-	        // Called early, before init even finished
-	        return null;
-	      }
-	      int width = screenResolution.x * 3/5;
-	      if (width < MIN_FRAME_WIDTH) {
-	        width = MIN_FRAME_WIDTH;
-	      } else if (width > MAX_FRAME_WIDTH) {
-	        width = MAX_FRAME_WIDTH;
-	      }
-	      int height = screenResolution.y * 1/5;
-	      if (height < MIN_FRAME_HEIGHT) {
-	        height = MIN_FRAME_HEIGHT;
-	      } else if (height > MAX_FRAME_HEIGHT) {
-	        height = MAX_FRAME_HEIGHT;
-	      }
-	      int leftOffset = (screenResolution.x - width) / 2;
-	      int topOffset = (screenResolution.y - height) / 2;
-	      framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
-	    }
-	    return framingRect;
-	  }
+	 * Calculates the framing rect which the UI should draw to show the user
+	 * where to place the barcode. This target helps with alignment as well as
+	 * forces the user to hold the device far enough away to ensure the image
+	 * will be in focus.
+	 * 
+	 * @return The rectangle to draw on screen in window coordinates.
+	 */
+	public synchronized Rect getFramingRect() {
+		if (framingRect == null) {
+			if (camera == null) {
+				return null;
+			}
+			Point screenResolution = getScreenResolution();
+			if (screenResolution == null) {
+				// Called early, before init even finished
+				return null;
+			}
+			int width = screenResolution.x * 3 / 5;
+			if (width < MIN_FRAME_WIDTH) {
+				width = MIN_FRAME_WIDTH;
+			} else if (width > MAX_FRAME_WIDTH) {
+				width = MAX_FRAME_WIDTH;
+			}
+			int height = screenResolution.y * 1 / 5;
+			if (height < MIN_FRAME_HEIGHT) {
+				height = MIN_FRAME_HEIGHT;
+			} else if (height > MAX_FRAME_HEIGHT) {
 
+				height = MAX_FRAME_HEIGHT;
+			}
+			int leftOffset = (screenResolution.x - width) / 2;
+			int topOffset = (screenResolution.y - height) / 2;
+			framingRect = new Rect(leftOffset, topOffset, leftOffset + width,
+					topOffset + height);
+		}
+		return framingRect;
+	}
+	
+	/**
+	 * Changes the size of the framing rect.
+	 * 
+	 * @param deltaWidth Number of pixels to adjust the width
+	 * @param deltaHeight Number of pixels to adjust the height
+	 */
+	public synchronized void adjustFramingRect(int deltaWidth, int deltaHeight) {
+		if (initialized) {
+			Point screenResolution = getScreenResolution();
+			Log.d("adjustFramingRect", "deltaWidth : " + deltaWidth + " deltaHeight: " + deltaHeight);
+
+			// Set maximum and minimum sizes
+			if ((framingRect.width() + deltaWidth > screenResolution.x - 4)
+					|| (framingRect.width() + deltaWidth < 50)) {
+				deltaWidth = 0;
+			}
+			if ((framingRect.height() + deltaHeight > screenResolution.y - 4)
+					|| (framingRect.height() + deltaHeight < 50)) {
+				deltaHeight = 0;
+			}
+			Log.d("adjustFramingRect", "deltaWidth : " + deltaWidth + " deltaHeight: " + deltaHeight);
+
+			int newWidth = framingRect.width() + deltaWidth;
+			int newHeight = framingRect.height() + deltaHeight;
+			int leftOffset = (screenResolution.x - newWidth) / 2;
+			int topOffset = (screenResolution.y - newHeight) / 2;
+			Log.d("adjustFramingRect", "leftOffset: " + leftOffset + " topOffset: " + topOffset + " newWidth: " + newWidth);
+			framingRect = new Rect(leftOffset, topOffset, + newWidth, topOffset + newHeight);
+			framingRectInPreview = null;
+		} else {
+			requestedFramingRectWidth = deltaWidth;
+			requestedFramingRectHeight = deltaHeight;
+		}
+	}
+	
+	/**
+	 * Like {@link #getFramingRect} but coordinates are in terms of the preview
+	 * frame, not UI / screen.
+	 */
+	public synchronized Rect getFramingRectInPreview() {
+		if (framingRectInPreview == null) {
+			Rect rect = new Rect(getFramingRect());
+			Point screenResolution = getScreenResolution();
+			Point cameraResolution = findBestPreviewSizeValue(camera.getParameters(), screenResolution);
+			if (cameraResolution == null || screenResolution == null) {
+				// Called early, before init even finished
+				return null;
+			}
+			rect.left = rect.left * cameraResolution.x / screenResolution.x;
+			rect.right = rect.right * cameraResolution.x / screenResolution.x;
+			rect.top = rect.top * cameraResolution.y / screenResolution.y;
+			rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+			framingRectInPreview = rect;
+		}
+		return framingRectInPreview;
+	}
 }

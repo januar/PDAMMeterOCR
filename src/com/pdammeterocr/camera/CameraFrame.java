@@ -5,13 +5,11 @@ import com.pdammeterocr.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 public final class CameraFrame extends View {
@@ -23,7 +21,7 @@ public final class CameraFrame extends View {
 	private Rect previewFrame;
 	private Rect rect;
 
-	private CameraConfiguration cameraManager;
+	public CameraConfiguration cameraManager;
 
 	public CameraFrame(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -49,6 +47,7 @@ public final class CameraFrame extends View {
 		super.onDraw(canvas);
 
 		Rect frame = cameraManager.getFramingRect();
+		Log.d("log onDraw", "frame.left : " + frame.left + " frame.right: " + frame.right + " frame.top: " + frame.top + " frame.bottom: " + frame.bottom);
 		if (frame == null) {
 			return;
 		}
