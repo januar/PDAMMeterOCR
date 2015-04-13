@@ -8,6 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
@@ -15,14 +19,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pdammeterocr.camera.*;
+import com.pdammeterocr.tesseract.TessOCR;
 
 public class CaptureActivity extends Activity {
 
@@ -35,6 +45,8 @@ public class CaptureActivity extends Activity {
 	public static final String APP_IMAGE_PATH = "PDAM Meter OCR";
 
 	private static final String TAG = "CAPTURE ACTIVITY";
+	
+	private TessOCR ocrEngine;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +54,8 @@ public class CaptureActivity extends Activity {
 		setContentView(R.layout.activity_capture);
 		Window window = getWindow();
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		ocrEngine = new TessOCR();
+		
 
 		// Create an instance of Camera
 		mCamera = CameraConfiguration.getCameraInstance();
@@ -67,7 +81,7 @@ public class CaptureActivity extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
 				//Log.d("log", "LastX : " + lastX + " LastY: " + lastY);
-				Log.d("log", "currentX : " + event.getX() + " currentY: " + event.getY());
+				Log.d(TAG, "currentX : " + event.getX() + " currentY: " + event.getY());
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
 					lastX = -1;
@@ -79,7 +93,8 @@ public class CaptureActivity extends Activity {
 
 					try {
 						Rect rect = cameraManager.getFramingRect();
-						Log.d("log", "rect.left : " + rect.left + " rect.right: " + rect.right + " rect.top: " + rect.top + " rect.bottom: " + rect.bottom);
+						Log.d(TAG, "rect.left : " + rect.left + " rect.right: " + rect.right + " rect.top: " + rect.top + " rect.bottom: " + rect.bottom);
+						Log.d(TAG, "lastX : " + lastX + " lastY : " + lastY);
 
 						final int BUFFER = 50;
 						final int BIG_BUFFER = 60;
@@ -218,16 +233,38 @@ public class CaptureActivity extends Activity {
 			}
 
 			try {
+				Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
+				Rect rect = cameraManager.getFramingRect();
+				Point resolution = cameraManager.getScreenResolution();
+				float widthSkala = image.getWidth() / resolution.x;
+				float heightSkala = image.getHeight() / resolution.y;
+				int newWidth = (int) (rect.width() * widthSkala);
+				int newHeight = (int) (rect.height() * heightSkala);
+				int newX = (int)(rect.left * widthSkala);
+				int newY = (int)(rect.top * heightSkala);
+				Bitmap meterImage = Bitmap.createBitmap(image, newX, newY, newWidth, newHeight);
+				
 				FileOutputStream fos = new FileOutputStream(pictureFile);
-				fos.write(data);
-				fos.close();
+				String ocrText = ocrEngine.getOCRResult(meterImage);
+				Log.d(TAG, ocrText);
+				
+				LinearLayout result_view = (LinearLayout)findViewById(R.id.result_view);
+				result_view.setVisibility(0);
+				TextView resultTextView = (TextView)findViewById(R.id.result_text_view);
+				resultTextView.setText(ocrText);
+				ImageView image_view = (ImageView)findViewById(R.id.image_view);
+				image_view.setImageBitmap(meterImage);
+				meterImage.compress(CompressFormat.JPEG, 100, fos);
+//				fos.write(data);
+//				fos.close();
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, "File not found: " + e.getMessage());
 			} catch (IOException e) {
 				Log.d(TAG, "Error accessing file: " + e.getMessage());
 			}
 
-			mPreview.mCamera.release();
+//			mPreview.mCamera.release();
+			//mPreview.mCamera.startPreview();
 		}
 	};
 
@@ -275,5 +312,20 @@ public class CaptureActivity extends Activity {
 		}
 
 		return mediaFile;
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_FOCUS) {
+			// Only perform autofocus if user is not holding down the button.
+			if (event.getRepeatCount() == 0) {
+				mPreview.requestAutoFocus(500L);
+			}
+			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_BACK) {
+			
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

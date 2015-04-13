@@ -3,8 +3,10 @@ package com.pdammeterocr.tesseract;
 import java.io.File;
 import java.util.Arrays;
 
+import android.graphics.Bitmap;
 import android.os.Environment;
 
+import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class TessOCR {
@@ -41,7 +43,7 @@ public class TessOCR {
 		if (!checkTessTrainingData()) {
 			//download traning data
 		}
-		mTess.init(TESSERACT_PATH, LANGUAGE_CODE);
+		mTess.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH, LANGUAGE_CODE);
 	}
 	
 	public Boolean checkTessTrainingData() {
@@ -57,7 +59,7 @@ public class TessOCR {
 			for (String cube : CUBE_DATA_FILES) {
 				check = false;
 				for (File file : listFile) {
-					if(file.getName() == LANGUAGE_CODE + cube)
+					if(file.getName().equals(LANGUAGE_CODE + cube))
 					{
 						check = true;
 						break;
@@ -72,7 +74,18 @@ public class TessOCR {
 		}
 	}
 	
-	
+	public String getOCRResult(Bitmap bitmap) {
+		String result;
+		try{
+		mTess.setImage(ReadFile.readBitmap(bitmap));
+		result = mTess.getUTF8Text();
+		}catch(Exception e)
+		{
+			result = e.getMessage();
+		}
+		
+		return result;
+	}
 	
 	public void onDestroy() {
 		if(mTess != null)

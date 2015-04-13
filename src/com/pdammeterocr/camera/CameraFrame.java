@@ -47,7 +47,6 @@ public final class CameraFrame extends View {
 		super.onDraw(canvas);
 
 		Rect frame = cameraManager.getFramingRect();
-		Log.d("log onDraw", "frame.left : " + frame.left + " frame.right: " + frame.right + " frame.top: " + frame.top + " frame.bottom: " + frame.bottom);
 		if (frame == null) {
 			return;
 		}

@@ -23,6 +23,61 @@
 	      android:background="#0000"/>
   </FrameLayout>
   
+  <LinearLayout
+      android:id="@+id/result_view"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:background="@color/result_view"
+      android:orientation="vertical"
+      android:padding="4dip"
+      android:visibility="gone" >
+
+      <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="12dip">
+          <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="wrap_content"
+          android:layout_height="fill_parent"
+          android:gravity="right|center_vertical">
+              <ImageView android:id="@+id/image_view"
+                   android:layout_width="160dip"
+                   android:layout_height="wrap_content"
+                   android:maxWidth="160dip"
+                   android:maxHeight="160dip"
+                   android:layout_marginBottom="4dip"
+                   android:adjustViewBounds="true"
+                   android:scaleType="centerInside"/>
+              
+              <LinearLayout
+		          android:orientation="horizontal"
+		          android:layout_width="wrap_content"
+		          android:layout_height="wrap_content">
+		
+		          <TextView android:id="@+id/result_view_label"
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                    android:text="@string/ocr_label"
+		                    android:textColor="@color/result_minor_text"
+		                    android:textStyle="bold"
+		                    android:textSize="14sp"
+		                    android:paddingRight="4dip"/>
+		
+		          <TextView android:id="@+id/result_text_view"
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                    android:textColor="@color/result_minor_text"
+		                    android:textSize="14sp"/>
+		
+		        </LinearLayout>
+          </LinearLayout>
+      </LinearLayout>
+  </LinearLayout>
+  
   <RelativeLayout android:id="@+id/button_layout"
       android:layout_width="fill_parent"
       android:layout_height="fill_parent">
