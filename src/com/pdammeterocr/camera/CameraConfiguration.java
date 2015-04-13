@@ -229,7 +229,7 @@ public class CameraConfiguration {
 			int leftOffset = (screenResolution.x - newWidth) / 2;
 			int topOffset = (screenResolution.y - newHeight) / 2;
 			Log.d("adjustFramingRect", "leftOffset: " + leftOffset + " topOffset: " + topOffset + " newWidth: " + newWidth);
-			framingRect = new Rect(leftOffset, topOffset, + newWidth, topOffset + newHeight);
+			framingRect = new Rect(leftOffset, topOffset, leftOffset+ newWidth, topOffset + newHeight);
 			framingRectInPreview = null;
 		} else {
 			requestedFramingRectWidth = deltaWidth;

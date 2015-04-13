@@ -9,5 +9,6 @@
     <string name="title_activity_capture">CaptureActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="btn_capture">Capture Picture</string>
+    <string name="ocr_label">result</string>
 
 </resources>
