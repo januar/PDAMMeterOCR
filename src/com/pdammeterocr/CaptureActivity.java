@@ -67,7 +67,7 @@ public class CaptureActivity extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
 				//Log.d("log", "LastX : " + lastX + " LastY: " + lastY);
-				Log.d("log", "currentX : " + event.getX() + " currentY: " + event.getY());
+				Log.d(TAG, "currentX : " + event.getX() + " currentY: " + event.getY());
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
 					lastX = -1;
@@ -79,7 +79,8 @@ public class CaptureActivity extends Activity {
 
 					try {
 						Rect rect = cameraManager.getFramingRect();
-						Log.d("log", "rect.left : " + rect.left + " rect.right: " + rect.right + " rect.top: " + rect.top + " rect.bottom: " + rect.bottom);
+						Log.d(TAG, "rect.left : " + rect.left + " rect.right: " + rect.right + " rect.top: " + rect.top + " rect.bottom: " + rect.bottom);
+						Log.d(TAG, "LastX : " + lastY + " lastY : " + lastY);
 
 						final int BUFFER = 50;
 						final int BIG_BUFFER = 60;
