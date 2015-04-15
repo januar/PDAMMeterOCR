@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -31,7 +33,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
+import com.pdammeterocr.tesseract.OCRRecognizeAsyncTask;
+import com.pdammeterocr.tesseract.OcrInitAsyncTask;
 import com.pdammeterocr.tesseract.TessOCR;
 
 public class CaptureActivity extends Activity {
@@ -40,13 +45,15 @@ public class CaptureActivity extends Activity {
 	public CameraPreview mPreview;
 	public CameraFrame mFrame;
 	public CameraConfiguration cameraManager;
+	private ProgressDialog progressDialog;
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final String APP_IMAGE_PATH = "PDAM Meter OCR";
 
 	private static final String TAG = "CAPTURE ACTIVITY";
 	
-	private TessOCR ocrEngine;
+	private TessBaseAPI ocrEngine;
+	private AsyncTask<Object, String, Boolean> recognizer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +61,12 @@ public class CaptureActivity extends Activity {
 		setContentView(R.layout.activity_capture);
 		Window window = getWindow();
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		ocrEngine = new TessOCR();
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressDialog.setIndeterminate(true);
+		ocrEngine = new TessBaseAPI();
+		new OcrInitAsyncTask(progressDialog, ocrEngine, this).execute("init");
 		
-
 		// Create an instance of Camera
 		mCamera = CameraConfiguration.getCameraInstance();
 
@@ -245,15 +255,13 @@ public class CaptureActivity extends Activity {
 				Bitmap meterImage = Bitmap.createBitmap(image, newX, newY, newWidth, newHeight);
 				
 				FileOutputStream fos = new FileOutputStream(pictureFile);
-				String ocrText = ocrEngine.getOCRResult(meterImage);
-				Log.d(TAG, ocrText);
 				
-				LinearLayout result_view = (LinearLayout)findViewById(R.id.result_view);
-				result_view.setVisibility(0);
-				TextView resultTextView = (TextView)findViewById(R.id.result_text_view);
-				resultTextView.setText(ocrText);
-				ImageView image_view = (ImageView)findViewById(R.id.image_view);
-				image_view.setImageBitmap(meterImage);
+//				LinearLayout result_view = (LinearLayout)findViewById(R.id.result_view);
+//				result_view.setVisibility(0);
+//				TextView resultTextView = (TextView)findViewById(R.id.result_text_view);
+//				ImageView image_view = (ImageView)findViewById(R.id.image_view);
+//				image_view.setImageBitmap(meterImage);
+				recognizer.execute(meterImage);
 				meterImage.compress(CompressFormat.JPEG, 100, fos);
 //				fos.write(data);
 //				fos.close();
@@ -269,6 +277,7 @@ public class CaptureActivity extends Activity {
 	};
 
 	public void takePicture(View view) {
+		recognizer = new OCRRecognizeAsyncTask(ocrEngine, this, progressDialog);
 		mPreview.mCamera.takePicture(null, null, mPicture);
 	}
 
@@ -327,5 +336,15 @@ public class CaptureActivity extends Activity {
 			
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	
+	void resumeOCR() {
+	    Log.d(TAG, "resumeOCR()");
+	    
+	    if (ocrEngine != null) {
+	    	ocrEngine.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
+//	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, characterBlacklist);
+//	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, characterWhitelist);
+	    }
 	}
 }
