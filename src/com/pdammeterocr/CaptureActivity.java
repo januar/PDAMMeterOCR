@@ -7,7 +7,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -16,6 +21,7 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -26,13 +32,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
 import com.pdammeterocr.tesseract.TessOCR;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 public class CaptureActivity extends Activity {
 
@@ -40,13 +45,15 @@ public class CaptureActivity extends Activity {
 	public CameraPreview mPreview;
 	public CameraFrame mFrame;
 	public CameraConfiguration cameraManager;
+	private ProgressDialog progressDialog;
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final String APP_IMAGE_PATH = "PDAM Meter OCR";
 
 	private static final String TAG = "CAPTURE ACTIVITY";
 	
-	private TessOCR ocrEngine;
+	private TessBaseAPI ocrEngine;
+	private AsyncTask<Object, String, Boolean> recognizer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +61,12 @@ public class CaptureActivity extends Activity {
 		setContentView(R.layout.activity_capture);
 		Window window = getWindow();
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		ocrEngine = new TessOCR();
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressDialog.setIndeterminate(true);
+		ocrEngine = new TessBaseAPI();
+		recognizer = new TessOCR(progressDialog, ocrEngine, this);
 		
-
 		// Create an instance of Camera
 		mCamera = CameraConfiguration.getCameraInstance();
 
@@ -200,6 +210,22 @@ public class CaptureActivity extends Activity {
 			}
 		});
 	}
+	
+	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+    	@Override
+    	public void onManagerConnected(int status){
+    		switch (status) {
+	            case LoaderCallbackInterface.SUCCESS:
+	            {
+	                Log.i(TAG, "OpenCV loaded successfully");
+	            } break;
+	            default:
+	            {
+	                super.onManagerConnected(status);
+	            } break;
+	        }
+    	}
+	};
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -225,7 +251,7 @@ public class CaptureActivity extends Activity {
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
 			// TODO Auto-generated method stub
-			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE, false);
 			if (pictureFile == null) {
 				Log.d(TAG,
 						"Error creating media file, check storage permissions");
@@ -244,16 +270,18 @@ public class CaptureActivity extends Activity {
 				int newY = (int)(rect.top * heightSkala);
 				Bitmap meterImage = Bitmap.createBitmap(image, newX, newY, newWidth, newHeight);
 				
-				FileOutputStream fos = new FileOutputStream(pictureFile);
-				String ocrText = ocrEngine.getOCRResult(meterImage);
-				Log.d(TAG, ocrText);
+				Mat meterImageMat = null;
+				Utils.bitmapToMat(meterImage, meterImageMat);
+				Mat destination = new Mat(meterImageMat.rows(), meterImageMat.cols(), meterImageMat.type());
+				Imgproc.threshold(meterImageMat, destination, 0, 255, Imgproc.THRESH_OTSU);
 				
-				LinearLayout result_view = (LinearLayout)findViewById(R.id.result_view);
-				result_view.setVisibility(0);
-				TextView resultTextView = (TextView)findViewById(R.id.result_text_view);
-				resultTextView.setText(ocrText);
-				ImageView image_view = (ImageView)findViewById(R.id.image_view);
-				image_view.setImageBitmap(meterImage);
+				Bitmap desBitmap = meterImage.copy(Bitmap.Config.ARGB_8888, true);
+				Utils.matToBitmap(destination, desBitmap);
+				FileOutputStream preFos = new FileOutputStream(getOutputMediaFile(MEDIA_TYPE_IMAGE, true));
+				desBitmap.compress(CompressFormat.JPEG, 100, preFos);
+				
+				FileOutputStream fos = new FileOutputStream(pictureFile);
+				recognizer.execute(meterImage);
 				meterImage.compress(CompressFormat.JPEG, 100, fos);
 //				fos.write(data);
 //				fos.close();
@@ -274,11 +302,11 @@ public class CaptureActivity extends Activity {
 
 	/** Create a file Uri for saving an image or video */
 	private static Uri getOutputMediaFileUri(int type) {
-		return Uri.fromFile(getOutputMediaFile(type));
+		return Uri.fromFile(getOutputMediaFile(type, false));
 	}
 
 	/** Create file for saving an image or video */
-	private static File getOutputMediaFile(int type) {
+	private static File getOutputMediaFile(int type, Boolean preprocess) {
 		// To be safe, you should check that the SDCard is mounted
 		// using Environment.getExternalStorageState() before doing this.
 		File mediaStorageDir = new File(
@@ -301,8 +329,11 @@ public class CaptureActivity extends Activity {
 				.format(new Date());
 		File mediaFile;
 		if (type == MEDIA_TYPE_IMAGE) {
-			mediaFile = new File(mediaStorageDir.getPath() + File.separator
-					+ "IMG_" + timeStamp + ".jpg");
+			if(preprocess){
+				mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + "_preprocess.jpg");
+			}else{
+				mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+			}
 		} else /*
 				 * if(type == MEDIA_TYPE_VIDEO) { mediaFile = new
 				 * File(mediaStorageDir.getPath() + File.separator + "VID_"+
@@ -327,5 +358,17 @@ public class CaptureActivity extends Activity {
 			
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	
+	void resumeOCR() {
+	    Log.d(TAG, "resumeOCR()");
+	    
+	    if (ocrEngine != null) {
+	    	ocrEngine.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
+//	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, characterBlacklist);
+//	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, characterWhitelist);
+	    }
+	    
+	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_10, this, mLoaderCallback);
 	}
 }
