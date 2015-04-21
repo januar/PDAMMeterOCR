@@ -49,7 +49,7 @@ public class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 			// download traning data
 			return false;
 		}
-		baseApi.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH,LANGUAGE_CODE);
+		baseApi.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH,LANGUAGE_CODE, TessBaseAPI.OEM_TESSERACT_ONLY);
 		return true;
 	}
 

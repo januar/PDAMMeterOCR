@@ -3,14 +3,26 @@ package com.pdammeterocr.tesseract;
 import java.io.File;
 import java.util.Arrays;
 
+import android.R.bool;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.pdammeterocr.CaptureActivity;
+import com.pdammeterocr.R;
 
-public class TessOCR {
+public class TessOCR extends AsyncTask<Object, String, Boolean>{
 	private TessBaseAPI mTess;
+	private ProgressDialog progressDialog;
+	private CaptureActivity activity;
 	
 	/** Suffixes of required data files for Cube. */
 	private static final String[] CUBE_DATA_FILES = { 
@@ -37,13 +49,15 @@ public class TessOCR {
 	/** Destination filename for orientation and script detection (OSD) data. */
 	static final String OSD_FILENAME_BASE = "osd.traineddata";
 	
-	public TessOCR() {
-		// TODO Auto-generated constructor stub
-		mTess = new TessBaseAPI();
-		if (!checkTessTrainingData()) {
-			//download traning data
-		}
-		mTess.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH, LANGUAGE_CODE);
+	private Bitmap resultImage;
+	private String resultText;
+	private Boolean resultStatus;
+	
+	public TessOCR(ProgressDialog progressDialog, TessBaseAPI baseApi,
+			CaptureActivity activity) {
+		this.activity = activity;
+		this.progressDialog = progressDialog;
+		this.mTess = baseApi;
 	}
 	
 	public Boolean checkTessTrainingData() {
@@ -92,4 +106,87 @@ public class TessOCR {
 			mTess.end();
 	}
 
+	@Override
+	protected Boolean doInBackground(Object... params) {
+		// TODO Auto-generated method stub
+		
+		publishProgress("Initialization OCR");
+		mTess = new TessBaseAPI();
+		if (!checkTessTrainingData()) {
+			// download traning data
+		}
+		mTess.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH,
+				LANGUAGE_CODE);
+		
+		publishProgress("Recognize image");
+		
+		long start = System.currentTimeMillis();
+		try {
+			resultImage = (Bitmap) params[0];
+			this.mTess.setImage(ReadFile.readBitmap(resultImage));
+			resultText = this.mTess.getUTF8Text();
+
+			// Check for failure to recognize text
+			if (resultText == null || resultText.equals("")) {
+			    resultStatus = false;
+				return false;
+			}else{
+				resultStatus = true;
+			}
+			// ocrResult.setCharacterBoundingBoxes(baseApi.getCharacters().getBoxRects());
+		} catch (RuntimeException e) {
+			Log.e("OcrRecognizeAsyncTask",
+					"Caught RuntimeException in request to Tesseract. Setting state to CONTINUOUS_STOPPED.");
+			e.printStackTrace();
+			try {
+				this.mTess.clear();
+			} catch (NullPointerException e1) {
+				// Continue
+			}
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		progressDialog.setTitle("Please wait");
+		progressDialog.setMessage("Checking for data installation...");
+		progressDialog.setIndeterminate(false);
+		progressDialog.setCancelable(false);
+		progressDialog.show();
+	}
+
+	@Override
+	protected void onPostExecute(Boolean result) {
+		super.onPostExecute(result);
+
+		try {
+			progressDialog.dismiss();
+			if(resultStatus == true)
+			{
+				LinearLayout result_view = (LinearLayout)activity.findViewById(R.id.result_view);
+				result_view.setVisibility(0);
+				TextView resultTextView = (TextView)activity.findViewById(R.id.result_text_view);
+				resultTextView.setText(resultText);
+				ImageView image_view = (ImageView)activity.findViewById(R.id.image_view);
+				image_view.setImageBitmap(resultImage);
+				activity.mPreview.mCamera.release();
+			}else{
+				activity.mPreview.mCamera.startPreview();
+				Toast toast = Toast.makeText(activity.getApplication(), "Failed", Toast.LENGTH_SHORT);
+			    toast.show();
+			}
+		} catch (IllegalArgumentException e) {
+			// Catch "View not attached to window manager" error, and continue
+		}
+	}
+	
+	@Override
+	protected void onProgressUpdate(String... values) {
+		// TODO Auto-generated method stub
+		super.onProgressUpdate(values);
+		progressDialog.setMessage(values[0]);
+	}
 }
