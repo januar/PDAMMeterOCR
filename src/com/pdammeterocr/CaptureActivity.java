@@ -6,11 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
@@ -20,7 +19,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,7 +31,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
-
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
 import com.pdammeterocr.tesseract.TessOCR;
@@ -50,7 +49,8 @@ public class CaptureActivity extends Activity {
 	public CameraPreview mPreview;
 	public CameraFrame mFrame;
 	public CameraConfiguration cameraManager;
-	private ProgressDialog progressDialog;
+	public ProgressDialog progressDialog;
+	public Boolean resultVisibility;
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final String APP_IMAGE_PATH = "PDAM Meter OCR";
@@ -59,11 +59,17 @@ public class CaptureActivity extends Activity {
 	
 	private TessBaseAPI ocrEngine;
 	private AsyncTask<Object, String, Boolean> recognizer;
+	private CaptureActivity activity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);	
 		setContentView(R.layout.activity_capture);
+		if(!OpenCVLoader.initDebug())
+		{
+			OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_10, this, mLoaderCallback);
+		}
+		this.activity = this;
 		Window window = getWindow();
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		progressDialog = new ProgressDialog(this);
@@ -83,6 +89,7 @@ public class CaptureActivity extends Activity {
 		mFrame = (CameraFrame) findViewById(R.id.cameraframe_view);
 		mFrame.cameraManager.setCamera(mCamera);
 		cameraManager = mFrame.cameraManager;
+		resultVisibility = false;
 		/*
 		 * FrameLayout preview = (FrameLayout)
 		 * findViewById(R.id.camera_preview); preview.addView(mPreview);
@@ -117,11 +124,19 @@ public class CaptureActivity extends Activity {
 							// Adjust the size of the viewfinder rectangle.
 							// Check if the touch event occurs in the corner
 							// areas first, because the regions overlap.
-							if (((currentX >= rect.left - BIG_BUFFER && currentX <= rect.left + BIG_BUFFER) || (lastX >= rect.left - BIG_BUFFER && lastX <= rect.left + BIG_BUFFER))
-									&& ((currentY <= rect.top + BIG_BUFFER && currentY >= rect.top - BIG_BUFFER) || (lastY <= rect.top + BIG_BUFFER && lastY >= rect.top - BIG_BUFFER))) {
-								// Top left corner: adjust both top and left sides
-								cameraManager.adjustFramingRect(2 * (lastX - currentX), 2 * (lastY - currentY));
-//								viewfinderView.removeResultText();
+							if (((currentX >= rect.left - BIG_BUFFER && currentX <= rect.left
+									+ BIG_BUFFER) || (lastX >= rect.left
+									- BIG_BUFFER && lastX <= rect.left
+									+ BIG_BUFFER))
+									&& ((currentY <= rect.top + BIG_BUFFER && currentY >= rect.top
+											- BIG_BUFFER) || (lastY <= rect.top
+											+ BIG_BUFFER && lastY >= rect.top
+											- BIG_BUFFER))) {
+								// Top left corner: adjust both top and left
+								// sides
+								cameraManager.adjustFramingRect(
+										2 * (lastX - currentX),
+										2 * (lastY - currentY));
 							} else if (((currentX >= rect.right - BIG_BUFFER && currentX <= rect.right
 									+ BIG_BUFFER) || (lastX >= rect.right
 									- BIG_BUFFER && lastX <= rect.right
@@ -132,8 +147,9 @@ public class CaptureActivity extends Activity {
 											- BIG_BUFFER))) {
 								// Top right corner: adjust both top and right
 								// sides
-								cameraManager.adjustFramingRect(2 * (currentX - lastX), 2 * (lastY - currentY));
-//								viewfinderView.removeResultText();
+								cameraManager.adjustFramingRect(
+										2 * (currentX - lastX),
+										2 * (lastY - currentY));
 							} else if (((currentX >= rect.left - BIG_BUFFER && currentX <= rect.left
 									+ BIG_BUFFER) || (lastX >= rect.left
 									- BIG_BUFFER && lastX <= rect.left
@@ -144,8 +160,9 @@ public class CaptureActivity extends Activity {
 											- BIG_BUFFER))) {
 								// Bottom left corner: adjust both bottom and
 								// left sides
-								cameraManager.adjustFramingRect(2 * (lastX - currentX), 2 * (currentY - lastY));
-//								viewfinderView.removeResultText();
+								cameraManager.adjustFramingRect(
+										2 * (lastX - currentX),
+										2 * (currentY - lastY));
 							} else if (((currentX >= rect.right - BIG_BUFFER && currentX <= rect.right
 									+ BIG_BUFFER) || (lastX >= rect.right
 									- BIG_BUFFER && lastX <= rect.right
@@ -156,8 +173,9 @@ public class CaptureActivity extends Activity {
 											- BIG_BUFFER))) {
 								// Bottom right corner: adjust both bottom and
 								// right sides
-								cameraManager.adjustFramingRect(2 * (currentX - lastX), 2 * (currentY - lastY));
-//								viewfinderView.removeResultText();
+								cameraManager.adjustFramingRect(
+										2 * (currentX - lastX),
+										2 * (currentY - lastY));
 							} else if (((currentX >= rect.left - BUFFER && currentX <= rect.left
 									+ BUFFER) || (lastX >= rect.left - BUFFER && lastX <= rect.left
 									+ BUFFER))
@@ -165,8 +183,8 @@ public class CaptureActivity extends Activity {
 								// Adjusting left side: event falls within
 								// BUFFER pixels of left side, and between top
 								// and bottom side limits
-								cameraManager.adjustFramingRect(2 * (lastX - currentX), 0);
-//								viewfinderView.removeResultText();
+								cameraManager.adjustFramingRect(
+										2 * (lastX - currentX), 0);
 							} else if (((currentX >= rect.right - BUFFER && currentX <= rect.right
 									+ BUFFER) || (lastX >= rect.right - BUFFER && lastX <= rect.right
 									+ BUFFER))
@@ -176,7 +194,6 @@ public class CaptureActivity extends Activity {
 								// and bottom side limits
 								cameraManager.adjustFramingRect(
 										2 * (currentX - lastX), 0);
-//								viewfinderView.removeResultText();
 							} else if (((currentY <= rect.top + BUFFER && currentY >= rect.top
 									- BUFFER) || (lastY <= rect.top + BUFFER && lastY >= rect.top
 									- BUFFER))
@@ -186,7 +203,6 @@ public class CaptureActivity extends Activity {
 								// right side limits
 								cameraManager.adjustFramingRect(0,
 										2 * (lastY - currentY));
-//								viewfinderView.removeResultText();
 							} else if (((currentY <= rect.bottom + BUFFER && currentY >= rect.bottom
 									- BUFFER) || (lastY <= rect.bottom + BUFFER && lastY >= rect.bottom
 									- BUFFER))
@@ -196,7 +212,6 @@ public class CaptureActivity extends Activity {
 								// left and right side limits
 								cameraManager.adjustFramingRect(0,
 										2 * (currentY - lastY));
-//								viewfinderView.removeResultText();
 							}
 						}
 					} catch (NullPointerException e) {
@@ -266,6 +281,7 @@ public class CaptureActivity extends Activity {
 			}
 
 			try {
+				mPreview.mCamera.startPreview();
 				Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
 				Rect rect = cameraManager.getFramingRect();
 				Point resolution = cameraManager.getScreenResolution();
@@ -277,10 +293,12 @@ public class CaptureActivity extends Activity {
 				int newY = (int)(rect.top * heightSkala);
 				Bitmap meterImage = Bitmap.createBitmap(image, newX, newY, newWidth, newHeight);
 				
-				Mat meterImageMat = new Mat(meterImage.getHeight(), meterImage.getHeight(), CvType.CV_8UC3);
+				Mat meterImageMat = new Mat();
+				Mat grayMeterMat = new Mat();
 				Utils.bitmapToMat(meterImage, meterImageMat);
-				Mat destination = new Mat(meterImageMat.rows(), meterImageMat.cols(), meterImageMat.type());
-				Imgproc.threshold(meterImageMat, destination, 0, 255, Imgproc.THRESH_OTSU);
+				Imgproc.cvtColor(meterImageMat, grayMeterMat, Imgproc.COLOR_BGR2GRAY);
+				Mat destination = new Mat(grayMeterMat.rows(), grayMeterMat.cols(), grayMeterMat.type());
+				Imgproc.threshold(grayMeterMat, destination, 0, 255, Imgproc.THRESH_OTSU);
 				
 				Bitmap desBitmap = meterImage.copy(Bitmap.Config.ARGB_8888, true);
 				Utils.matToBitmap(destination, desBitmap);
@@ -288,10 +306,11 @@ public class CaptureActivity extends Activity {
 				desBitmap.compress(CompressFormat.JPEG, 100, preFos);
 				
 				FileOutputStream fos = new FileOutputStream(pictureFile);
+				recognizer = new TessOCR(progressDialog, ocrEngine, activity);
 				recognizer.execute(meterImage);
 				meterImage.compress(CompressFormat.JPEG, 100, fos);
-//				fos.write(data);
-//				fos.close();
+				fos.close();
+				preFos.close();
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, "File not found: " + e.getMessage());
 				toast.setText(e.getMessage());
@@ -312,11 +331,12 @@ public class CaptureActivity extends Activity {
 	}
 
 	/** Create a file Uri for saving an image or video */
-	private static Uri getOutputMediaFileUri(int type) {
+/*	private static Uri getOutputMediaFileUri(int type) {
 		return Uri.fromFile(getOutputMediaFile(type, false));
-	}
+	}*/
 
 	/** Create file for saving an image or video */
+	@SuppressLint("SimpleDateFormat")
 	private static File getOutputMediaFile(int type, Boolean preprocess) {
 		// To be safe, you should check that the SDCard is mounted
 		// using Environment.getExternalStorageState() before doing this.
@@ -366,7 +386,18 @@ public class CaptureActivity extends Activity {
 			}
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_BACK) {
-			
+			if(resultVisibility)
+			{
+				LinearLayout result_view = (LinearLayout)findViewById(R.id.result_view);
+				result_view.setVisibility(View.INVISIBLE);
+				RelativeLayout button_done = (RelativeLayout)activity.findViewById(R.id.btndone_layout);
+				button_done.setVisibility(View.INVISIBLE);
+				RelativeLayout button_layout = (RelativeLayout)findViewById(R.id.button_layout);
+				button_layout.setVisibility(View.VISIBLE);
+				resultVisibility = false;
+				mFrame.setVisibility(View.VISIBLE);
+				return true;
+			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}
