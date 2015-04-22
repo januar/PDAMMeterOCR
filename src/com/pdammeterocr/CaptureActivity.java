@@ -32,11 +32,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
+
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
 import com.pdammeterocr.tesseract.TessOCR;
+
 import org.opencv.android.Utils;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 public class CaptureActivity extends Activity {
@@ -251,6 +256,8 @@ public class CaptureActivity extends Activity {
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
 			// TODO Auto-generated method stub
+			
+			Toast toast = Toast.makeText(getApplication(), "", Toast.LENGTH_LONG);
 			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE, false);
 			if (pictureFile == null) {
 				Log.d(TAG,
@@ -270,7 +277,7 @@ public class CaptureActivity extends Activity {
 				int newY = (int)(rect.top * heightSkala);
 				Bitmap meterImage = Bitmap.createBitmap(image, newX, newY, newWidth, newHeight);
 				
-				Mat meterImageMat = null;
+				Mat meterImageMat = new Mat(meterImage.getHeight(), meterImage.getHeight(), CvType.CV_8UC3);
 				Utils.bitmapToMat(meterImage, meterImageMat);
 				Mat destination = new Mat(meterImageMat.rows(), meterImageMat.cols(), meterImageMat.type());
 				Imgproc.threshold(meterImageMat, destination, 0, 255, Imgproc.THRESH_OTSU);
@@ -287,8 +294,12 @@ public class CaptureActivity extends Activity {
 //				fos.close();
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, "File not found: " + e.getMessage());
+				toast.setText(e.getMessage());
+				toast.show();
 			} catch (IOException e) {
 				Log.d(TAG, "Error accessing file: " + e.getMessage());
+				toast.setText(e.getMessage());
+				toast.show();
 			}
 
 //			mPreview.mCamera.release();
