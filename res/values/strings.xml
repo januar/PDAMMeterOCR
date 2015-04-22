@@ -11,5 +11,9 @@
     <string name="btn_capture">Capture</string>
     <string name="ocr_label">result</string>
     <string name="btn_done">Done</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="btn_history">History</string>
+    <string name="btn_about">About Developer</string>
+    <string name="btn_capture_meter">Capture Meter</string>
 
 </resources>

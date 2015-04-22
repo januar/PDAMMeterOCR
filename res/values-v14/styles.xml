@@ -24,5 +24,17 @@
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
     </style>
+    
+    <style name="CustomActionBarTheme"
+           parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
+    </style>
+    
+    <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">#2980b9</item>
+    </style>
 
 </resources>

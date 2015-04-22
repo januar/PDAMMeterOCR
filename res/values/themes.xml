@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomActionBarTheme"
+           parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
+    </style>
+    
+    <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">#2980b9</item>
+    </style>
+    
+    <style name="LayoutHomeButton">
+        <item name="android:padding">10dp</item>
+        <item name="android:minHeight">100dp</item>
+        <item name="android:minWidth">120dp</item>
+    </style>
+    
+    <style name="HomeButton">
+        <item name="android:minHeight">70dp</item>
+        <item name="android:minWidth">70dp</item>
+        <item name="android:layout_gravity">center_vertical|center_horizontal</item>
+    </style>
+    
+    <style name="HomeButtonText">
+        <item name="android:layout_gravity">center_vertical|center_horizontal</item>
+    </style>
+</resources>

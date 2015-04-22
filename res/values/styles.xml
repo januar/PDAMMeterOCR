@@ -40,17 +40,4 @@
     </style>
 
     <style name="ButtonBarButton" />
-    
-    <style name="CustomActionBarTheme"
-           parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-
-        <!-- Support library compatibility -->
-        <item name="actionBarStyle">@style/ActionBarStyle</item>
-    </style>
-    
-    <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">#2980b9</item>
-    </style>
-	
 </resources>
