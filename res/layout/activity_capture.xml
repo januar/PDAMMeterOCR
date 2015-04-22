@@ -78,9 +78,26 @@
       </LinearLayout>
   </LinearLayout>
   
-  <RelativeLayout android:id="@+id/button_layout"
+  <RelativeLayout
+      android:id="@+id/btndone_layout"
       android:layout_width="fill_parent"
-      android:layout_height="fill_parent">
+      android:layout_height="fill_parent"
+      android:visibility="gone" >
+      
+		<Button android:id="@+id/button_done"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentRight="true"
+	          android:layout_alignParentTop="true"
+	          android:layout_marginRight="15dp"
+	          android:text="@string/btn_done" />
+  </RelativeLayout>
+  
+  <RelativeLayout
+      android:id="@+id/button_layout"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:visibility="visible" >
 
       <Button
           android:id="@+id/button_capture"
@@ -89,7 +106,7 @@
           android:layout_alignParentRight="true"
           android:layout_alignParentTop="true"
           android:layout_marginRight="15dp"
-          android:text="Capture"
+          android:text="@string/btn_capture"
           android:onClick="takePicture" />
 
   </RelativeLayout>

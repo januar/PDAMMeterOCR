@@ -1,16 +1,15 @@
 package com.pdammeterocr.tesseract;
 
 import java.io.File;
-import java.util.Arrays;
-
-import android.R.bool;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -120,7 +119,7 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 		
 		publishProgress("Recognize image");
 		
-		long start = System.currentTimeMillis();
+		// long start = System.currentTimeMillis();
 		try {
 			resultImage = (Bitmap) params[0];
 			this.mTess.setImage(ReadFile.readBitmap(resultImage));
@@ -167,14 +166,19 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 			if(resultStatus == true)
 			{
 				LinearLayout result_view = (LinearLayout)activity.findViewById(R.id.result_view);
-				result_view.setVisibility(0);
+				result_view.setVisibility(View.VISIBLE);
 				TextView resultTextView = (TextView)activity.findViewById(R.id.result_text_view);
 				resultTextView.setText(resultText);
 				ImageView image_view = (ImageView)activity.findViewById(R.id.image_view);
 				image_view.setImageBitmap(resultImage);
-				activity.mPreview.mCamera.release();
+				RelativeLayout button_done = (RelativeLayout)activity.findViewById(R.id.btndone_layout);
+				button_done.setVisibility(View.VISIBLE);
+				
+				RelativeLayout button_layout = (RelativeLayout)activity.findViewById(R.id.button_layout);
+				button_layout.setVisibility(View.INVISIBLE);
+				activity.mFrame.setVisibility(View.INVISIBLE);
+				activity.resultVisibility = true;
 			}else{
-				activity.mPreview.mCamera.startPreview();
 				Toast toast = Toast.makeText(activity.getApplication(), "Failed", Toast.LENGTH_SHORT);
 			    toast.show();
 			}
