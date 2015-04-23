@@ -1,15 +1,8 @@
 package com.pdammeterocr;
 
-import java.io.File;
-
-import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,22 +14,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        PackageManager m = getPackageManager();
-        String s = getPackageName();
-        PackageInfo p;
-		try {
-			p = m.getPackageInfo(s, 0);
-			s = p.applicationInfo.dataDir;
-			String datapath = Environment.getExternalStorageDirectory() + "/tesseract/";
-	        String language = "eng";
-	        File dir = new File(datapath + "tessdata/");
-	        if (!dir.exists()) 
-	            dir.mkdirs();
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
 
 
@@ -61,7 +38,8 @@ public class MainActivity extends Activity {
     
     public void captureCamera(View view)
     {
-    	Intent intent = new Intent(this, CaptureActivity.class);
+//    	Intent intent = new Intent(this, CaptureActivity.class);
+    	Intent intent = new Intent(this, MeterDataActivity.class);
     	startActivity(intent);
 //    	Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //    	

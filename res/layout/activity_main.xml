@@ -6,92 +6,100 @@
     android:scrollbarStyle="insideOverlay"
     tools:context="com.pdammeterocr.MainActivity" >
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:scrollbarStyle="insideOverlay" >
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="30dp"
-            android:gravity="center"
-            android:orientation="horizontal" >
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:scrollbarStyle="insideOverlay" >
 
             <LinearLayout
-                style="@style/LayoutHomeButton"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    style="@style/LayoutHomeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:id="@+id/button3"
+                        style="@style/HomeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/camera50"
+                        android:onClick="captureCamera" />
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        style="@style/HomeButtonText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/btn_capture_meter" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LayoutHomeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:id="@+id/button4"
+                        style="@style/HomeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/history_filled50" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        style="@style/HomeButtonText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/btn_history" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
                 android:orientation="vertical" >
 
                 <Button
-                    android:id="@+id/button3"
+                    android:id="@+id/button1"
                     style="@style/HomeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/camera50"
-                    android:onClick="captureCamera" />
+                    android:background="@drawable/administrator_50" />
 
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/textView3"
                     style="@style/HomeButtonText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="@string/btn_capture_meter" />
-            </LinearLayout>
-
-            <LinearLayout
-                style="@style/LayoutHomeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <Button
-                    android:id="@+id/button4"
-                    style="@style/HomeButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/history_filled50" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    style="@style/HomeButtonText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/btn_history" />
+                    android:text="@string/btn_about" />
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="30dp"
-            android:gravity="center"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/button1"
-                style="@style/HomeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/administrator_50" />
-
-            <TextView
-                android:id="@+id/textView3"
-                style="@style/HomeButtonText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/btn_about" />
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

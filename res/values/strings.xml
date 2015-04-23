@@ -7,13 +7,19 @@
     <string name="title_activity_full_screen">PDAM Meter OCR</string>
     <string name="splash_screen_content_desc">splash image</string>
     <string name="title_activity_capture">CaptureActivity</string>
-    <string name="hello_world">Hello world!</string>
     <string name="btn_capture">Capture</string>
     <string name="ocr_label">result</string>
     <string name="btn_done">Done</string>
-    <string name="title_activity_test">TestActivity</string>
     <string name="btn_history">History</string>
     <string name="btn_about">About Developer</string>
     <string name="btn_capture_meter">Capture Meter</string>
+    <string name="title_activity_meter_data">Meter Data</string>
+    <string name="lbl_meter_no">Meter Number</string>
+    <string name="btn_qrcode">QRCode</string>
+    <string name="lbl_meter_no_hint">Meter Number</string>
+    <string name="lbl_meter_result">Meter Result</string>
+    <string name="lbl_meter_result_hint">Meter Result</string>
+    <string name="btn_scan_meter">Start Scan</string>
+    <string name="btn_save">Save</string>
 
 </resources>

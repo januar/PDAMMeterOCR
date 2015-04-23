@@ -6,17 +6,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.AsyncTask;
@@ -30,17 +34,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
 import com.pdammeterocr.tesseract.TessOCR;
 
 import org.opencv.android.Utils;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 public class CaptureActivity extends Activity {
@@ -51,6 +57,7 @@ public class CaptureActivity extends Activity {
 	public CameraConfiguration cameraManager;
 	public ProgressDialog progressDialog;
 	public Boolean resultVisibility;
+	public String imagePath;
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final String APP_IMAGE_PATH = "PDAM Meter OCR";
@@ -61,6 +68,7 @@ public class CaptureActivity extends Activity {
 	private AsyncTask<Object, String, Boolean> recognizer;
 	private CaptureActivity activity;
 
+	@SuppressLint("ClickableViewAccessibility") 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
@@ -72,6 +80,15 @@ public class CaptureActivity extends Activity {
 		this.activity = this;
 		Window window = getWindow();
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		Button btn_done = (Button)findViewById(R.id.button_done);
+		btn_done.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setIndeterminate(true);
@@ -271,17 +288,19 @@ public class CaptureActivity extends Activity {
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
 			// TODO Auto-generated method stub
-			
+			mPreview.mCamera.startPreview();
 			Toast toast = Toast.makeText(getApplication(), "", Toast.LENGTH_LONG);
 			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE, false);
 			if (pictureFile == null) {
 				Log.d(TAG,
 						"Error creating media file, check storage permissions");
+
+				toast.setText("Error creating media file, check storage permissions");
+				toast.show();
 				return;
 			}
 
-			try {
-				mPreview.mCamera.startPreview();
+			try {				
 				Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
 				Rect rect = cameraManager.getFramingRect();
 				Point resolution = cameraManager.getScreenResolution();
@@ -306,6 +325,7 @@ public class CaptureActivity extends Activity {
 				desBitmap.compress(CompressFormat.JPEG, 100, preFos);
 				
 				FileOutputStream fos = new FileOutputStream(pictureFile);
+				imagePath = pictureFile.getAbsolutePath();
 				recognizer = new TessOCR(progressDialog, ocrEngine, activity);
 				recognizer.execute(meterImage);
 				meterImage.compress(CompressFormat.JPEG, 100, fos);
@@ -413,4 +433,21 @@ public class CaptureActivity extends Activity {
 	    
 	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_10, this, mLoaderCallback);
 	}
+	
+	@Override
+	public void finish() {
+	  // Prepare data intent 
+	  Intent data = new Intent();
+	  data.putExtra("status", resultVisibility);
+	  if(resultVisibility)
+	  {
+		  TextView result_text_view = (TextView) findViewById(R.id.result_text_view);
+		  ImageView image_view = (ImageView)activity.findViewById(R.id.image_view); 
+		  data.putExtra("meter", result_text_view.getText());
+		  data.putExtra("image", imagePath);
+	  }
+	  // Activity finished ok, return the data
+	  setResult(RESULT_OK, data);
+	  super.finish();
+	} 
 }

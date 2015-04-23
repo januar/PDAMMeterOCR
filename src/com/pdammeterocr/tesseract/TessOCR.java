@@ -155,6 +155,7 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 		progressDialog.setIndeterminate(false);
 		progressDialog.setCancelable(false);
 		progressDialog.show();
+		activity.mFrame.setVisibility(View.INVISIBLE);
 	}
 
 	@Override
@@ -176,7 +177,6 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 				
 				RelativeLayout button_layout = (RelativeLayout)activity.findViewById(R.id.button_layout);
 				button_layout.setVisibility(View.INVISIBLE);
-				activity.mFrame.setVisibility(View.INVISIBLE);
 				activity.resultVisibility = true;
 			}else{
 				Toast toast = Toast.makeText(activity.getApplication(), "Failed", Toast.LENGTH_SHORT);
