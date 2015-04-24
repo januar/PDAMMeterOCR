@@ -6,11 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -34,16 +32,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
 import com.pdammeterocr.tesseract.TessOCR;
-
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -441,7 +436,6 @@ public class CaptureActivity extends Activity {
 	  if(resultVisibility)
 	  {
 		  TextView result_text_view = (TextView) findViewById(R.id.result_text_view);
-		  ImageView image_view = (ImageView)activity.findViewById(R.id.image_view); 
 		  data.putExtra("meter", result_text_view.getText());
 		  data.putExtra("image", imagePath);
 	  }

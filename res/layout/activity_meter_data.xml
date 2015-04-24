@@ -24,11 +24,12 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/txt_meter_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/lbl_meter_no_hint" />
+                android:hint="@string/lbl_meter_no_hint"
+                android:inputType="number" />
 
             <Button
                 android:id="@+id/btn_qrcode_scan"
@@ -56,12 +57,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/lbl_meter_result_hint" />
+                android:hint="@string/lbl_meter_result_hint"
+                android:inputType="number"/>
 
             <ImageView
                 android:id="@+id/result_image"
                 android:layout_width="match_parent"
-                android:layout_height="56dp" />
+                android:layout_height="56dp" 
+                android:contentDescription="image result"/>
+
+            <Button
+                android:id="@+id/btn_scan_meter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonStyleSmall"
+                android:minWidth="64dip"
+                android:layout_gravity="end"
+                android:text="@string/btn_scan_meter" />
 
         </LinearLayout>
 
@@ -73,28 +85,12 @@
         android:layout_alignParentBottom="true">
 
         <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
+            android:id="@+id/btn_save"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="14dp"
-            android:layout_marginRight="14dp"
             android:minWidth="64dip"
-            android:text="@string/btn_save" />
-
-        <Button
-            android:id="@+id/btn_scan_meter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="14dp"
-            android:layout_marginStart="14dp"
-            android:minWidth="64dip"
-            android:text="@string/btn_scan_meter" />
+            android:text="@string/btn_save" 
+            android:enabled="false"/>
 
     </RelativeLayout>
 
