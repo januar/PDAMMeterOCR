@@ -2,6 +2,8 @@ package com.pdammeterocr;
 
 import java.io.File;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,11 +18,13 @@ import android.widget.Toast;
 
 public class MeterDataActivity extends Activity {
 	private static int REQUEST_CODE = 21;
+	private Activity activity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_meter_data);
+		this.activity = this;
 		
 		Button btn_scan_meter = (Button) findViewById(R.id.btn_scan_meter);
 		btn_scan_meter.setOnClickListener(new View.OnClickListener() {
@@ -40,9 +44,8 @@ public class MeterDataActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				try {
-	                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-	                intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); // "PRODUCT_MODE for bar codes
-	                startActivityForResult(intent, 0);
+	                IntentIntegrator scanIntegrator = new IntentIntegrator(activity);
+	                scanIntegrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
 	            } catch (Exception e) {    
 	                Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
 	                Intent marketIntent = new Intent(Intent.ACTION_VIEW,marketUri);
@@ -66,10 +69,15 @@ public class MeterDataActivity extends Activity {
 					ImageView result_image = (ImageView)findViewById(R.id.result_image);
 					Bitmap image = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
 					result_image.setImageBitmap(image);
+					Toast.makeText(this, "Scan success",
+							Toast.LENGTH_SHORT).show();
 				}
-				Toast.makeText(this, data.getExtras().getString("status"),
-						Toast.LENGTH_SHORT).show();
 			}
+		}else if(resultCode == RESULT_OK && requestCode == 0)
+		{
+			String contents = data.getStringExtra("SCAN_RESULT");
+            String format = data.getStringExtra("SCAN_RESULT_FORMAT");
+            Toast.makeText(this, contents + " - " + format, Toast.LENGTH_LONG).show();
 		}
 	}
 }
