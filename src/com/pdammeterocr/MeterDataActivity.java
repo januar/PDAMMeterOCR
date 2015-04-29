@@ -113,14 +113,24 @@ public class MeterDataActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				EditText txt_meter_result = (EditText)findViewById(R.id.txt_meter_result);
-				EditText txt_meter_number = (EditText)findViewById(R.id.txt_meter_number);
-				File imageFile = new File(imagePath);
-				ImageView result_image = (ImageView)findViewById(R.id.result_image);
-				Bitmap image = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-				
-				Result result = new Result(txt_meter_number.getText().toString(), 
-						txt_meter_result.getText().toString(), image);
+				try{
+					EditText txt_meter_result = (EditText) findViewById(R.id.txt_meter_result);
+					EditText txt_meter_number = (EditText) findViewById(R.id.txt_meter_number);
+					File imageFile = new File(imagePath);
+					ImageView result_image = (ImageView) findViewById(R.id.result_image);
+					Bitmap image = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+
+					Result result = new Result(txt_meter_number.getText()
+							.toString(), txt_meter_result.getText().toString(),
+							image);
+					datasource.saveResult(result);
+					Toast.makeText(activity, "Save success", Toast.LENGTH_SHORT).show();
+					finish();
+				}
+				catch(Exception e)
+				{
+					Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 	}

@@ -48,8 +48,8 @@ public class ResultDataSource {
 		return newResult;
 	}
 	
-	public List<Result> getAllComments() {
-		List<Result> comments = new ArrayList<Result>();
+	public List<Result> getAllResult() {
+		List<Result> resultList = new ArrayList<Result>();
 
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_RESULT,
 				allColumns, null, null, null, null, MySQLiteHelper.COLUMN_DATE + " DESC");
@@ -57,17 +57,17 @@ public class ResultDataSource {
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Result result = cursorToResult(cursor);
-			comments.add(result);
+			resultList.add(result);
 			cursor.moveToNext();
 		}
 		// make sure to close the cursor
 		cursor.close();
-		return comments;
+		return resultList;
 	}
 	
 	public void deleteComment(Result result) {
 		long id = result.getId();
-		System.out.println("Comment deleted with id: " + id);
+		System.out.println("Result deleted with id: " + id);
 		database.delete(MySQLiteHelper.TABLE_RESULT, MySQLiteHelper.COLUMN_ID
 				+ " = " + id, null);
 	}
@@ -77,9 +77,9 @@ public class ResultDataSource {
 		result.setId(cursor.getInt(0));
 		result.setMeterNumber(cursor.getString(1));
 		result.setMeterResult(cursor.getString(2));
-		result.setDate(cursor.getString(4));
-		byte[] img = cursor.getBlob(3);
+		byte[] img = cursor.getBlob(4);
 		result.setImage(BitmapFactory.decodeByteArray(img, 0, img.length));
+		result.setDate(cursor.getString(3));
 		return result;
 	}
 

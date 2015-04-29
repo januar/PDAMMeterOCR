@@ -49,4 +49,10 @@ public class MainActivity extends Activity {
 //        // start the image capture Intent
 //        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
+    
+    public void historyActivity(View view)
+    {
+    	Intent intent = new Intent(this, HistoryActivity.class);
+    	startActivity(intent);
+    }
 }

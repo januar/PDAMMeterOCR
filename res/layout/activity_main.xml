@@ -35,7 +35,7 @@
                     android:orientation="vertical" >
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/btn_captcure"
                         style="@style/HomeButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -59,11 +59,12 @@
                     android:orientation="vertical" >
 
                     <Button
-                        android:id="@+id/button4"
+                        android:id="@+id/btn_history"
                         style="@style/HomeButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/history_filled50" />
+                        android:background="@drawable/history_filled50" 
+                        android:onClick="historyActivity"/>
 
                     <TextView
                         android:id="@+id/textView2"
@@ -84,7 +85,7 @@
                 android:orientation="vertical" >
 
                 <Button
-                    android:id="@+id/button1"
+                    android:id="@+id/btn_about"
                     style="@style/HomeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

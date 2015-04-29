@@ -57,6 +57,7 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 		this.activity = activity;
 		this.progressDialog = progressDialog;
 		this.mTess = baseApi;
+		resultStatus = false;
 	}
 	
 	public Boolean checkTessTrainingData() {
@@ -114,6 +115,8 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 		if (!checkTessTrainingData()) {
 			// download traning data
 		}
+		mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
+		mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 		mTess.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH,
 				LANGUAGE_CODE);
 		
@@ -123,7 +126,7 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 		try {
 			resultImage = (Bitmap) params[0];
 			this.mTess.setImage(ReadFile.readBitmap(resultImage));
-			resultText = this.mTess.getUTF8Text();
+			resultText = mTess.getUTF8Text();
 
 			// Check for failure to recognize text
 			if (resultText == null || resultText.equals("")) {

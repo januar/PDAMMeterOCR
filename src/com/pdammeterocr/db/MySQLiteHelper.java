@@ -20,8 +20,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
 	// Database creation sql statement
 	private static final String DATABASE_CREATE = "create table "
-			+ TABLE_RESULT + "(" + COLUMN_ID
-			+ " integer primary key autoincrement, " 
+			+ TABLE_RESULT + "(" + COLUMN_ID + " integer primary key autoincrement, " 
 			+ COLUMN_METER_NUMBER + " text not null, "
 			+ COLUMN_METER_RESULT + " text not null, "
 			+ COLUMN_IMAGE + " blob not null, "

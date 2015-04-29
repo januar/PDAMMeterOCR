@@ -41,6 +41,7 @@ import com.pdammeterocr.camera.*;
 import com.pdammeterocr.tesseract.TessOCR;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class CaptureActivity extends Activity {
@@ -298,8 +299,8 @@ public class CaptureActivity extends Activity {
 				Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
 				Rect rect = cameraManager.getFramingRect();
 				Point resolution = cameraManager.getScreenResolution();
-				float widthSkala = image.getWidth() / resolution.x;
-				float heightSkala = image.getHeight() / resolution.y;
+				float widthSkala = ((float)image.getWidth()) / resolution.x;
+				float heightSkala = ((float)image.getHeight()) / resolution.y;
 				int newWidth = (int) (rect.width() * widthSkala);
 				int newHeight = (int) (rect.height() * heightSkala);
 				int newX = (int)(rect.left * widthSkala);
@@ -311,6 +312,7 @@ public class CaptureActivity extends Activity {
 				Utils.bitmapToMat(meterImage, meterImageMat);
 				Imgproc.cvtColor(meterImageMat, grayMeterMat, Imgproc.COLOR_BGR2GRAY);
 				Mat destination = new Mat(grayMeterMat.rows(), grayMeterMat.cols(), grayMeterMat.type());
+				Imgproc.GaussianBlur(grayMeterMat, grayMeterMat, new Size(5,5), 2.2);
 				Imgproc.threshold(grayMeterMat, destination, 0, 255, Imgproc.THRESH_OTSU);
 				
 				Bitmap desBitmap = meterImage.copy(Bitmap.Config.ARGB_8888, true);

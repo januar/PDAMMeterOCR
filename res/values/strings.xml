@@ -21,5 +21,7 @@
     <string name="lbl_meter_result_hint">Meter Result</string>
     <string name="btn_scan_meter">Start Scan</string>
     <string name="btn_save">Save</string>
+    <string name="title_activity_history">Scan History</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
