@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -257,5 +259,15 @@ public class CameraConfiguration {
 			framingRectInPreview = rect;
 		}
 		return framingRectInPreview;
+	}
+	
+	public Point getCameraResolution()
+	{
+		Parameters parameters = camera.getParameters();
+		Size size = parameters.getPictureSize();
+		
+		Point point = new Point(size.width, size.height);
+		
+		return point;
 	}
 }

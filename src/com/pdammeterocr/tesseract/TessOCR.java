@@ -1,8 +1,19 @@
 package com.pdammeterocr.tesseract;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import org.opencv.android.Utils;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -51,12 +62,19 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 	private Bitmap resultImage;
 	private String resultText;
 	private Boolean resultStatus;
+	private byte[] data;
+	private int width;
+	private int height;
+	private String path = null;
 	
 	public TessOCR(ProgressDialog progressDialog, TessBaseAPI baseApi,
-			CaptureActivity activity) {
+			CaptureActivity activity, byte[] data, int width, int heigth) {
 		this.activity = activity;
 		this.progressDialog = progressDialog;
 		this.mTess = baseApi;
+		this.data = data;
+		this.width = width;
+		this.height = heigth;
 		resultStatus = false;
 	}
 	
@@ -115,17 +133,44 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 		if (!checkTessTrainingData()) {
 			// download traning data
 		}
-		mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
-		mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 		mTess.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH,
 				LANGUAGE_CODE);
+		mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
+		mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
+		mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 		
 		publishProgress("Recognize image");
 		
 		// long start = System.currentTimeMillis();
 		try {
-			resultImage = (Bitmap) params[0];
-			this.mTess.setImage(ReadFile.readBitmap(resultImage));
+			Rect rect = activity.cameraManager.getFramingRect();
+			resultImage = renderCroppedGreyscaleBitmap(data, width, height, rect.top, rect.left, rect.width(), rect.height());
+			
+			Mat grayMeterMat = new Mat();
+			Mat meterImageMat = new Mat();
+			Mat destination = new Mat(grayMeterMat.rows(), grayMeterMat.cols(), grayMeterMat.type());
+			Utils.bitmapToMat(resultImage, meterImageMat);
+			Imgproc.cvtColor(meterImageMat, grayMeterMat, Imgproc.COLOR_BGR2GRAY);
+			
+			Imgproc.threshold(grayMeterMat, destination, 0, 255, Imgproc.THRESH_OTSU);
+			Bitmap thresImage = resultImage.copy(Bitmap.Config.ARGB_8888, true);
+			Utils.matToBitmap(destination, thresImage);
+			Bitmap ocrimage = thresImage.copy(Config.ARGB_8888, true);
+			
+			File picture = CaptureActivity.getOutputMediaFile(1, false);
+			FileOutputStream fos = new FileOutputStream(picture);
+			resultImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+			fos.close();
+			path = picture.getAbsolutePath();
+			
+			FileOutputStream prefos = new FileOutputStream(CaptureActivity.getOutputMediaFile(1, true));
+			ocrimage.compress(Bitmap.CompressFormat.JPEG, 100, prefos);
+			prefos.close();
+			
+//			resultImage = Bitmap.createBitmap(resultImage, resultImage.getWidth(), resultImage.getHeight(), Config.ARGB_8888);
+			
+//			Bitmap ocrimage = resultImage.copy(Config.ARGB_8888, true);
+			this.mTess.setImage(ReadFile.readBitmap(ocrimage));
 			resultText = mTess.getUTF8Text();
 
 			// Check for failure to recognize text
@@ -146,6 +191,12 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 				// Continue
 			}
 			return false;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return true;
 	}
@@ -180,8 +231,10 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 				
 				RelativeLayout button_layout = (RelativeLayout)activity.findViewById(R.id.button_layout);
 				button_layout.setVisibility(View.INVISIBLE);
+				activity.imagePath = path;
 				activity.resultVisibility = true;
 			}else{
+				activity.mFrame.setVisibility(View.VISIBLE);
 				Toast toast = Toast.makeText(activity.getApplication(), "Failed", Toast.LENGTH_SHORT);
 			    toast.show();
 			}
@@ -195,5 +248,26 @@ public class TessOCR extends AsyncTask<Object, String, Boolean>{
 		// TODO Auto-generated method stub
 		super.onProgressUpdate(values);
 		progressDialog.setMessage(values[0]);
+	}
+	
+	public Bitmap renderCroppedGreyscaleBitmap(byte[] yuvData, int dataWidth,
+			int dataHeight, int top, int left, int width, int height) {
+		int[] pixels = new int[width * height];
+		byte[] yuv = yuvData;
+		int inputOffset = top * dataWidth + left;
+
+		for (int y = 0; y < height; y++) {
+			int outputOffset = y * width;
+			for (int x = 0; x < width; x++) {
+				int grey = yuv[inputOffset + x] & 0xff;
+				pixels[outputOffset + x] = 0xFF000000 | (grey * 0x00010101);
+			}
+			inputOffset += dataWidth;
+		}
+
+		Bitmap bitmap = Bitmap.createBitmap(width, height,
+				Bitmap.Config.ARGB_8888);
+		bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+		return bitmap;
 	}
 }

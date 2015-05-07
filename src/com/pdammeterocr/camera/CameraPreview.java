@@ -64,6 +64,10 @@ public class CameraPreview extends SurfaceView implements
 		super(context, attrs, defStyle);
 		// TODO Auto-generated constructor stub
 	}
+	
+	public Point getCameraResolution() {
+		return this.cameraResolution;
+	}
 
 	public void initCamera(Camera camera, Context context) {
 		mCamera = camera;

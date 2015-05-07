@@ -1,5 +1,6 @@
 package com.pdammeterocr;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -20,6 +21,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.PreviewCallback;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -38,13 +40,15 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
+import com.pdammeterocr.tesseract.OcrInitAsyncTask;
+import com.pdammeterocr.tesseract.OcrRecognizeAsyncTask;
 import com.pdammeterocr.tesseract.TessOCR;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-public class CaptureActivity extends Activity {
+public final class CaptureActivity extends Activity {
 
 	public Camera mCamera;
 	public CameraPreview mPreview;
@@ -62,6 +66,7 @@ public class CaptureActivity extends Activity {
 	private TessBaseAPI ocrEngine;
 	private AsyncTask<Object, String, Boolean> recognizer;
 	private CaptureActivity activity;
+	private Boolean takePicture;
 
 	@SuppressLint("ClickableViewAccessibility") 
 	@Override
@@ -84,11 +89,12 @@ public class CaptureActivity extends Activity {
 				finish();
 			}
 		});
+		takePicture = false;
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setIndeterminate(true);
-		ocrEngine = new TessBaseAPI();
-		recognizer = new TessOCR(progressDialog, ocrEngine, this);
+		//ocrEngine = new TessBaseAPI();
+		//recognizer = new TessOCR(progressDialog, ocrEngine, this);
 		
 		// Create an instance of Camera
 		mCamera = CameraConfiguration.getCameraInstance();
@@ -277,7 +283,7 @@ public class CaptureActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	
 	private PictureCallback mPicture = new PictureCallback() {
 
 		@Override
@@ -295,7 +301,8 @@ public class CaptureActivity extends Activity {
 				return;
 			}
 
-			try {				
+			try {
+				
 				Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
 				Rect rect = cameraManager.getFramingRect();
 				Point resolution = cameraManager.getScreenResolution();
@@ -322,7 +329,7 @@ public class CaptureActivity extends Activity {
 				
 				FileOutputStream fos = new FileOutputStream(pictureFile);
 				imagePath = pictureFile.getAbsolutePath();
-				recognizer = new TessOCR(progressDialog, ocrEngine, activity);
+				recognizer = new TessOCR(progressDialog, ocrEngine, activity, data, resolution.x, resolution.y);
 				recognizer.execute(meterImage);
 				meterImage.compress(CompressFormat.JPEG, 100, fos);
 				fos.close();
@@ -341,9 +348,49 @@ public class CaptureActivity extends Activity {
 			//mPreview.mCamera.startPreview();
 		}
 	};
+	
+	private Camera.PreviewCallback cameraPreview = new PreviewCallback() {
+		
+		@Override
+		public void onPreviewFrame(byte[] data, Camera camera) {
+			// TODO Auto-generated method stub
+			try{
+				if(takePicture){
+					Toast toast = Toast.makeText(getApplication(), "", Toast.LENGTH_LONG);
+					File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE, false);
+					if (pictureFile == null) {
+						Log.d(TAG,
+								"Error creating media file, check storage permissions");
+
+						toast.setText("Error creating media file, check storage permissions");
+						toast.show();
+						return;
+					}
+					
+//					Rect rect = cameraManager.getFramingRect();
+					Point resolution = mPreview.getCameraResolution();
+//					Bitmap image = renderCroppedGreyscaleBitmap(data, resolution.x, resolution.y, rect.top, rect.left, rect.width(), rect.height());
+					
+//					FileOutputStream fos = new FileOutputStream(pictureFile);
+//					image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//					fos.close();
+					
+					imagePath = pictureFile.getAbsolutePath();
+					recognizer = new TessOCR(progressDialog, ocrEngine, activity, data, resolution.x, resolution.y).execute();
+//					new OcrRecognizeAsyncTask(ocrEngine, activity, progressDialog, data, resolution.x, resolution.y).execute();
+					takePicture = false;
+				}
+			}catch (Exception e) {
+				// TODO: handle exception
+				Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}
+	};
+	
 
 	public void takePicture(View view) {
-		mPreview.mCamera.takePicture(null, null, mPicture);
+		takePicture = true;
+		mPreview.mCamera.setOneShotPreviewCallback(cameraPreview);
 	}
 
 	/** Create a file Uri for saving an image or video */
@@ -353,7 +400,7 @@ public class CaptureActivity extends Activity {
 
 	/** Create file for saving an image or video */
 	@SuppressLint("SimpleDateFormat")
-	private static File getOutputMediaFile(int type, Boolean preprocess) {
+	public static File getOutputMediaFile(int type, Boolean preprocess) {
 		// To be safe, you should check that the SDCard is mounted
 		// using Environment.getExternalStorageState() before doing this.
 		File mediaStorageDir = new File(
@@ -418,13 +465,13 @@ public class CaptureActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 	
-	void resumeOCR() {
+	public void resumeOCR() {
 	    Log.d(TAG, "resumeOCR()");
 	    
 	    if (ocrEngine != null) {
 	    	ocrEngine.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
-//	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, characterBlacklist);
-//	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, characterWhitelist);
+	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "");
+	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
 	    }
 	    
 	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_10, this, mLoaderCallback);
@@ -445,4 +492,39 @@ public class CaptureActivity extends Activity {
 	  setResult(RESULT_OK, data);
 	  super.finish();
 	} 
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		if(ocrEngine == null)
+		{
+//			ocrEngine = new TessBaseAPI();
+//			new OcrInitAsyncTask(progressDialog, ocrEngine, this).execute();
+		}else{
+			resumeOCR();
+		}
+	}
+	
+	public Bitmap renderCroppedGreyscaleBitmap(byte[] yuvData, int dataWidth,
+			int dataHeight, int top, int left, int width, int height) {
+		int[] pixels = new int[width * height];
+		byte[] yuv = yuvData;
+		int inputOffset = top * dataWidth + left;
+
+		for (int y = 0; y < height; y++) {
+			int outputOffset = y * width;
+			for (int x = 0; x < width; x++) {
+				int grey = yuv[inputOffset + x] & 0xff;
+				pixels[outputOffset + x] = 0xFF000000 | (grey * 0x00010101);
+			}
+			inputOffset += dataWidth;
+		}
+
+		Bitmap bitmap = Bitmap.createBitmap(width, height,
+				Bitmap.Config.ARGB_8888);
+		bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+		return bitmap;
+	}
 }

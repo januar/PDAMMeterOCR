@@ -9,7 +9,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Environment;
 
-public class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
+public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 
 	private ProgressDialog progressDialog;
 	private TessBaseAPI baseApi;
@@ -69,6 +69,7 @@ public class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 		super.onPostExecute(result);
 
 		try {
+			this.activity.resumeOCR();
 			progressDialog.dismiss();
 		} catch (IllegalArgumentException e) {
 			// Catch "View not attached to window manager" error, and continue
