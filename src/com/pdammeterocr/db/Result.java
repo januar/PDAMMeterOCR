@@ -14,6 +14,7 @@ public class Result {
 	private String meter_result;
 	private String date;
 	private byte[] image;
+	private Boolean selected;
 
 	public Result() {
 		// TODO Auto-generated constructor stub
@@ -79,6 +80,14 @@ public class Result {
 	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	    bitmap.compress(CompressFormat.PNG, 0, outputStream);       
 	    return outputStream.toByteArray();
+	}
+	
+	public Boolean isSelected() {
+		return this.selected;
+	}
+	
+	public void setSelected(Boolean selected) {
+		this.selected = selected;
 	}
 
 }

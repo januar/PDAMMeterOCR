@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/google" 
+        android:src="@drawable/splash" 
         android:contentDescription="@string/splash_screen_content_desc"/>
     
     <TextView
@@ -24,6 +24,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="14dp"
-        android:text="@string/splash_screen" />
+        android:text="@string/splash_screen"
+        android:textColor="@color/status_text" />
 
 </RelativeLayout>

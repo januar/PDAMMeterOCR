@@ -8,16 +8,17 @@ import com.pdammeterocr.db.ResultDataSource;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
-public class ListViewAsyncTask extends AsyncTask<String, String, Boolean> {
+public final class ListViewAsyncTask extends AsyncTask<String, String, Boolean> {
 	private ProgressDialog progressDialog;
 	public HistoryActivity activity;
 	private ResultDataSource datasource;
 	private CustomAdapter adapter;
 	
-	public ListViewAsyncTask(ProgressDialog progressDialog, HistoryActivity activity) {
+	public ListViewAsyncTask(ProgressDialog progressDialog, HistoryActivity activity, CustomAdapter adapter) {
 		// TODO Auto-generated constructor stub
 		this.progressDialog = progressDialog;
 		this.activity = activity;
+		this.adapter = adapter;
 		datasource = new ResultDataSource(activity);
 	}
 
@@ -53,6 +54,7 @@ public class ListViewAsyncTask extends AsyncTask<String, String, Boolean> {
 			activity.setListAdapter(adapter);
 //			adapter.notifyDataSetChanged();
 			progressDialog.dismiss();
+			activity.adapter = this.adapter;
 		} catch (IllegalArgumentException e) {
 			// Catch "View not attached to window manager" error, and continue
 		}

@@ -65,7 +65,7 @@ public class ResultDataSource {
 		return resultList;
 	}
 	
-	public void deleteComment(Result result) {
+	public void deleteResult(Result result) {
 		long id = result.getId();
 		System.out.println("Result deleted with id: " + id);
 		database.delete(MySQLiteHelper.TABLE_RESULT, MySQLiteHelper.COLUMN_ID
@@ -80,6 +80,7 @@ public class ResultDataSource {
 		byte[] img = cursor.getBlob(4);
 		result.setImage(BitmapFactory.decodeByteArray(img, 0, img.length));
 		result.setDate(cursor.getString(3));
+		result.setSelected(false);
 		return result;
 	}
 

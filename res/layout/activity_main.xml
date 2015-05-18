@@ -21,17 +21,18 @@
             android:scrollbarStyle="insideOverlay" >
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:orientation="horizontal" >
 
                 <LinearLayout
                     style="@style/LayoutHomeButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/main_color"
                     android:orientation="vertical" >
 
                     <Button
@@ -39,7 +40,7 @@
                         style="@style/HomeButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/camera50"
+                        android:background="@drawable/camera"
                         android:onClick="captureCamera" />
 
                     <TextView
@@ -48,14 +49,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="@string/btn_capture_meter" />
+                        android:text="@string/btn_capture_meter"
+                        android:textColor="@color/result_text" />
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LayoutHomeButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:background="@color/main_color"
                     android:orientation="vertical" >
 
                     <Button
@@ -63,8 +67,8 @@
                         style="@style/HomeButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/history_filled50" 
-                        android:onClick="historyActivity"/>
+                        android:background="@drawable/history"
+                        android:onClick="historyActivity" />
 
                     <TextView
                         android:id="@+id/textView2"
@@ -72,7 +76,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="@string/btn_history" />
+                        android:text="@string/btn_history"
+                        android:textColor="@color/result_text" />
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -80,16 +86,18 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/main_color"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:padding="10dp" >
 
                 <Button
                     android:id="@+id/btn_about"
                     style="@style/HomeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/administrator_50" />
+                    android:background="@drawable/info" />
 
                 <TextView
                     android:id="@+id/textView3"
@@ -97,10 +105,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="@string/btn_about" />
+                    android:text="@string/btn_about"
+                    android:textColor="@color/result_text" />
+
             </LinearLayout>
         </LinearLayout>
-
     </ScrollView>
 
 </LinearLayout>
