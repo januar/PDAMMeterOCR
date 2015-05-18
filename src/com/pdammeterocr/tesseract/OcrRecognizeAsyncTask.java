@@ -9,8 +9,6 @@ import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.CaptureActivity;
 import com.pdammeterocr.R;
-
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Rect;

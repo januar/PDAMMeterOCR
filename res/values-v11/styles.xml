@@ -29,7 +29,7 @@
     </style>
     
     <style name="CustomActionBarTheme"
-           parent="Theme.AppCompat.Light.DarkActionBar">
+           parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
 
         <!-- Support library compatibility -->
@@ -38,6 +38,7 @@
     
     <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/main_color</item>
+        <item name="background">@color/main_color</item>
     </style>
 
 </resources>

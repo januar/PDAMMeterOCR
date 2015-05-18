@@ -11,6 +11,7 @@
     <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/main_color</item>
         <item name="icon">@drawable/logo</item>
+        <item name="background">@color/main_color</item>
     </style>
     
     <style name="LayoutHomeButton">

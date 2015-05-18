@@ -7,7 +7,7 @@
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     android:background="@color/main_color"
-    tools:context="com.pdammeterocr.SplashScreenActivity" >
+    tools:context="com.pdammeterocr.AboutActivity" >
 
     <ImageView
         android:id="@+id/imageView1"
@@ -16,16 +16,26 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/splash_screen_content_desc"
-        android:src="@drawable/splash" />
-    
+        android:src="@drawable/about" />
+
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="14dp"
-        android:text="@string/splash_screen"
+        android:layout_marginBottom="134dp"
+        android:text="@string/about_version"
+        android:textColor="@color/status_text" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="@string/about_copyright"
         android:textColor="@color/status_text" />
 
 </RelativeLayout>

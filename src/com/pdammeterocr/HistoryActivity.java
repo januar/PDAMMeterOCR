@@ -1,20 +1,31 @@
 package com.pdammeterocr;
+
+import android.support.v7.appcompat.*;
+import android.support.v7.app.ActionBarActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.pdammeterocr.db.Result;
+import com.pdammeterocr.db.ResultDataSource;
 
 import android.os.Bundle;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-public class HistoryActivity extends ListActivity {
+public class HistoryActivity extends ActionBarActivity {
+	private ListView mListView;
 	private ProgressDialog progressDialog;
 	public CustomAdapter adapter;
+	public ResultDataSource datasource;
+	MenuItem delete;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +39,7 @@ public class HistoryActivity extends ListActivity {
 		list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
+			@SuppressWarnings("null")
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
@@ -35,23 +47,19 @@ public class HistoryActivity extends ListActivity {
 				adapter.isShow = true;
 				adapter.setChecked(position);
 				adapter.notifyDataSetChanged();
+				delete.setVisible(true);
 				return true;
 			}
 		});
+		
 	}
-
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		//String item = (String) getListAdapter().getItem(position);
-		//Toast.makeText(this, item + " selected", Toast.LENGTH_SHORT).show();
-	}
-	
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.history, menu);
+		delete = menu.findItem(R.id.action_delete);
+		delete.setVisible(false);
 		return true;
 	}
 	
@@ -60,10 +68,46 @@ public class HistoryActivity extends ListActivity {
 		// TODO Auto-generated method stub
 		switch (item.getItemId()) {
 		case R.id.action_delete:
-			for
+			try {
+				List<Result> index = new ArrayList<Result>();
+				for (Result object : adapter.data) {
+					if(object.isSelected()){
+						index.add(object);
+						datasource.deleteResult(object);
+					}
+				}
+				
+				for (Result ind : index) {
+					adapter.data.remove(ind);
+				}
+				
+				adapter.notifyDataSetChanged();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	protected ListView getListView() {
+	    if (mListView == null) {
+	        mListView = (ListView) findViewById(android.R.id.list);
+	    }
+	    return mListView;
+	}
+	
+	protected void setListAdapter(ListAdapter adapter) {
+	    getListView().setAdapter(adapter);
+	}
+
+	protected ListAdapter getListAdapter() {
+	    ListAdapter adapter = getListView().getAdapter();
+	    if (adapter instanceof HeaderViewListAdapter) {
+	        return ((HeaderViewListAdapter)adapter).getWrappedAdapter();
+	    } else {
+	        return adapter;
+	    }
 	}
 
 }

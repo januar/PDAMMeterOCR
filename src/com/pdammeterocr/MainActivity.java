@@ -1,6 +1,7 @@
 package com.pdammeterocr;
 
-import android.app.Activity;
+import android.support.v7.appcompat.*;
+import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,4 +56,9 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, HistoryActivity.class);
     	startActivity(intent);
     }
+    
+    public void aboutActivity(View view) {
+		Intent intent = new Intent(this, AboutActivity.class);
+		startActivity(intent);
+	}
 }

@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -21,12 +21,12 @@
         android:label="@string/app_name"
         android:theme="@style/CustomActionBarTheme" >
         <activity
-            android:name="com.pdammeterocr.MainActivity"
+            android:name=".MainActivity"
             android:icon="@drawable/logo"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.pdammeterocr.SplashScreenActivity"
+            android:name=".SplashScreenActivity"
             android:label="@string/title_activity_full_screen"
             android:theme="@style/NoActionBarTheme" >
             <intent-filter>
@@ -36,20 +36,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.pdammeterocr.CaptureActivity"
+            android:name=".CaptureActivity"
             android:label="@string/title_activity_capture"
             android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme" >
         </activity>
         <activity
-            android:name="com.pdammeterocr.MeterDataActivity"
+            android:name=".MeterDataActivity"
             android:icon="@drawable/logo"
             android:label="@string/title_activity_meter_data" >
         </activity>
         <activity
-            android:name="com.pdammeterocr.HistoryActivity"
-            android:label="@string/title_activity_history" 
-            android:logo="@drawable/logo">
+            android:name=".HistoryActivity"
+            android:label="@string/title_activity_history"
+            android:logo="@drawable/logo" >
+        </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/title_activity_about" 
+            android:theme="@style/NoActionBarTheme">
         </activity>
     </application>
 
