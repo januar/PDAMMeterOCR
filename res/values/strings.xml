@@ -13,11 +13,11 @@
     <string name="btn_history">History</string>
     <string name="btn_about">About Developer</string>
     <string name="btn_capture_meter">Capture Meter</string>
-    <string name="title_activity_meter_data">Meter Data</string>
-    <string name="lbl_meter_no">Meter Number</string>
-    <string name="btn_qrcode">QRCode</string>
+    <string name="title_activity_meter_data">Captcure Meter</string>
+    <string name="lbl_meter_no">No. Pelanggan</string>
+    <string name="btn_qrcode">Scan QRCode</string>
     <string name="lbl_meter_no_hint">Meter Number</string>
-    <string name="lbl_meter_result">Meter Result</string>
+    <string name="lbl_meter_result">Indeks Meter</string>
     <string name="lbl_meter_result_hint">Meter Result</string>
     <string name="btn_scan_meter">Start Scan</string>
     <string name="btn_save">Save</string>
@@ -27,5 +27,7 @@
     <string name="title_activity_about">AboutActivity</string>
     <string name="about_version">Version 1.0</string>
     <string name="about_copyright">\u00A9 2015 by Fadli Rizky</string>
+    <string name="lbl_pelanggan">No. Pelanggan :  </string>
+    <string name="lbl_index_meter">Index meter :  </string>
 
 </resources>
