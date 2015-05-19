@@ -60,7 +60,7 @@ public class HistoryActivity extends ListActivity {
 		// TODO Auto-generated method stub
 		switch (item.getItemId()) {
 		case R.id.action_delete:
-			for
+			
 			default:
 				return super.onOptionsItemSelected(item);
 		}
