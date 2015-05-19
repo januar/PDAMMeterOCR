@@ -55,6 +55,7 @@ public final class ListViewAsyncTask extends AsyncTask<String, String, Boolean> 
 //			adapter.notifyDataSetChanged();
 			progressDialog.dismiss();
 			activity.adapter = this.adapter;
+			activity.datasource = this.datasource;
 		} catch (IllegalArgumentException e) {
 			// Catch "View not attached to window manager" error, and continue
 		}

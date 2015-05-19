@@ -1,11 +1,11 @@
 package com.pdammeterocr;
 
+import android.support.v7.appcompat.*;
+import android.support.v7.app.ActionBarActivity;
 import java.io.File;
-
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.pdammeterocr.db.Result;
 import com.pdammeterocr.db.ResultDataSource;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,7 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class MeterDataActivity extends Activity {
+public class MeterDataActivity extends ActionBarActivity {
 	private static int REQUEST_CODE = 21;
 	private Activity activity;
 	private String imagePath;

@@ -24,5 +24,8 @@
     <string name="title_activity_history">Scan History</string>
     <string name="hello_world">Hello world!</string>
     <string name="ic_delete">Delete</string>
+    <string name="title_activity_about">AboutActivity</string>
+    <string name="about_version">Version 1.0</string>
+    <string name="about_copyright">\u00A9 2015 by Fadli Rizky</string>
 
 </resources>

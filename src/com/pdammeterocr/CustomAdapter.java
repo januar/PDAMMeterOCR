@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,11 +62,11 @@ public class CustomAdapter extends BaseAdapter {
 		TextView text_result = (TextView)vi.findViewById(R.id.text_result);
 		ImageView image_item = (ImageView)vi.findViewById(R.id.image_item);
 		TextView text_date = (TextView)vi.findViewById(R.id.text_date);
-		CheckBox chk_selected = (CheckBox)vi.findViewById(R.id.chk_selected);
+		final CheckBox chk_selected = (CheckBox)vi.findViewById(R.id.chk_selected);
 		
 		if(data.size() > 0)
 		{
-			Result item = data.get(position);
+			final Result item = data.get(position);
 			text_meter.setText("Meter Number : " + item.getMeterNumber());
 			text_result.setText("scan result : " + item.getMeterResult());
 			image_item.setImageBitmap(item.getImage());
@@ -73,6 +75,18 @@ public class CustomAdapter extends BaseAdapter {
 			if(isShow){
 				chk_selected.setVisibility(View.VISIBLE);
 			}
+			chk_selected.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					// TODO Auto-generated method stub
+					if(chk_selected.isChecked()){
+						item.setSelected(true);
+					}else{
+						item.setSelected(false);
+					}
+				}
+			});
 		}
 		
 		return vi;

@@ -33,15 +33,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@color/main_color"
-                    android:orientation="vertical" >
+                    android:orientation="vertical" 
+                    android:onClick="captureCamera">
 
                     <Button
                         android:id="@+id/btn_captcure"
                         style="@style/HomeButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/camera"
-                        android:onClick="captureCamera" />
+                        android:background="@drawable/camera" 
+                        android:onClick="captureCamera"/>
 
                     <TextView
                         android:id="@+id/textView1"
@@ -60,15 +61,16 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:background="@color/main_color"
-                    android:orientation="vertical" >
+                    android:orientation="vertical" 
+                    android:onClick="historyActivity" >
 
                     <Button
                         android:id="@+id/btn_history"
                         style="@style/HomeButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/history"
-                        android:onClick="historyActivity" />
+                        android:background="@drawable/history" 
+                        android:onClick="historyActivity"/>
 
                     <TextView
                         android:id="@+id/textView2"
@@ -90,14 +92,16 @@
                 android:background="@color/main_color"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="10dp" >
+                android:padding="10dp" 
+                android:onClick="aboutActivity">
 
                 <Button
                     android:id="@+id/btn_about"
                     style="@style/HomeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/info" />
+                    android:background="@drawable/info" 
+                    android:onClick="aboutActivity"/>
 
                 <TextView
                     android:id="@+id/textView3"

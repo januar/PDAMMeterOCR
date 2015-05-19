@@ -1,6 +1,5 @@
 package com.pdammeterocr;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,8 +39,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
-import com.pdammeterocr.tesseract.OcrInitAsyncTask;
-import com.pdammeterocr.tesseract.OcrRecognizeAsyncTask;
 import com.pdammeterocr.tesseract.TessOCR;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
