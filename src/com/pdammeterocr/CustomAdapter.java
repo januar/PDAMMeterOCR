@@ -67,8 +67,8 @@ public class CustomAdapter extends BaseAdapter {
 		if(data.size() > 0)
 		{
 			final Result item = data.get(position);
-			text_meter.setText("Meter Number : " + item.getMeterNumber());
-			text_result.setText("scan result : " + item.getMeterResult());
+			text_meter.setText(" " + item.getMeterNumber());
+			text_result.setText(" " + item.getMeterResult());
 			image_item.setImageBitmap(item.getImage());
 			text_date.setText(item.getDate());
 			chk_selected.setChecked(item.isSelected());

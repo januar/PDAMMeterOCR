@@ -11,7 +11,7 @@
     <string name="ocr_label">result</string>
     <string name="btn_done">Done</string>
     <string name="btn_history">History</string>
-    <string name="btn_about">About Developer</string>
+    <string name="btn_about">Info</string>
     <string name="btn_capture_meter">Capture Meter</string>
     <string name="title_activity_meter_data">Captcure Meter</string>
     <string name="lbl_meter_no">No. Pelanggan</string>
