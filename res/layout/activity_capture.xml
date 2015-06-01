@@ -54,24 +54,27 @@
                    android:scaleType="centerInside"/>
               
               <LinearLayout
-		          android:orientation="horizontal"
-		          android:layout_width="wrap_content"
-		          android:layout_height="wrap_content">
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal" >
 		
-		          <TextView android:id="@+id/result_view_label"
-		                    android:layout_width="wrap_content"
-		                    android:layout_height="wrap_content"
-		                    android:text="@string/ocr_label"
-		                    android:textColor="@color/result_minor_text"
-		                    android:textStyle="bold"
-		                    android:textSize="14sp"
-		                    android:paddingRight="4dip"/>
+		          <TextView
+		              android:id="@+id/result_view_label"
+		              android:layout_width="wrap_content"
+		              android:layout_height="wrap_content"
+		              android:text="@string/ocr_label"
+		              android:textColor="@color/result_minor_text"
+		              android:textSize="14sp"
+		              android:textStyle="bold" />
 		
-		          <TextView android:id="@+id/result_text_view"
-		                    android:layout_width="wrap_content"
-		                    android:layout_height="wrap_content"
-		                    android:textColor="@color/result_minor_text"
-		                    android:textSize="14sp"/>
+		          <TextView
+		              android:id="@+id/result_text_view"
+		              android:layout_width="wrap_content"
+		              android:layout_height="wrap_content"
+		              android:layout_marginLeft="2dp"
+		              android:text="sdfsdagsdfg"
+		              android:textColor="@color/result_minor_text"
+		              android:textSize="14sp" />
 		
 		        </LinearLayout>
           </LinearLayout>

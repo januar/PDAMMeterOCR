@@ -6,9 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -37,9 +39,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
+import com.pdammeterocr.tesseract.OcrInitAsyncTask;
+import com.pdammeterocr.tesseract.OcrRecognizeAsyncTask;
 import com.pdammeterocr.tesseract.TessOCR;
+
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -60,7 +66,7 @@ public final class CaptureActivity extends Activity {
 
 	private static final String TAG = "CAPTURE ACTIVITY";
 	
-	private TessBaseAPI ocrEngine;
+	public TessBaseAPI ocrEngine;
 	private AsyncTask<Object, String, Boolean> recognizer;
 	private CaptureActivity activity;
 	private Boolean takePicture;
@@ -364,17 +370,11 @@ public final class CaptureActivity extends Activity {
 						return;
 					}
 					
-//					Rect rect = cameraManager.getFramingRect();
 					Point resolution = mPreview.getCameraResolution();
-//					Bitmap image = renderCroppedGreyscaleBitmap(data, resolution.x, resolution.y, rect.top, rect.left, rect.width(), rect.height());
-					
-//					FileOutputStream fos = new FileOutputStream(pictureFile);
-//					image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//					fos.close();
 					
 					imagePath = pictureFile.getAbsolutePath();
-					recognizer = new TessOCR(progressDialog, ocrEngine, activity, data, resolution.x, resolution.y).execute();
-//					new OcrRecognizeAsyncTask(ocrEngine, activity, progressDialog, data, resolution.x, resolution.y).execute();
+//					recognizer = new TessOCR(progressDialog, ocrEngine, activity, data, resolution.x, resolution.y).execute();
+					new OcrRecognizeAsyncTask(ocrEngine, activity, progressDialog, data, resolution.x, resolution.y).execute();
 					takePicture = false;
 				}
 			}catch (Exception e) {
@@ -467,8 +467,8 @@ public final class CaptureActivity extends Activity {
 	    
 	    if (ocrEngine != null) {
 	    	ocrEngine.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
-	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "");
 	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
+	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ");
 	    }
 	    
 	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_10, this, mLoaderCallback);
@@ -497,8 +497,8 @@ public final class CaptureActivity extends Activity {
 		
 		if(ocrEngine == null)
 		{
-//			ocrEngine = new TessBaseAPI();
-//			new OcrInitAsyncTask(progressDialog, ocrEngine, this).execute();
+			ocrEngine = new TessBaseAPI();
+			new OcrInitAsyncTask(progressDialog, ocrEngine, this).execute();
 		}else{
 			resumeOCR();
 		}

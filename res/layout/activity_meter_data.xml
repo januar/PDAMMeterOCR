@@ -60,12 +60,6 @@
                 android:hint="@string/lbl_meter_result_hint"
                 android:inputType="number"/>
 
-            <ImageView
-                android:id="@+id/result_image"
-                android:layout_width="match_parent"
-                android:layout_height="56dp" 
-                android:contentDescription="image result"/>
-
             <Button
                 android:id="@+id/btn_scan_meter"
                 android:layout_width="wrap_content"
@@ -74,6 +68,12 @@
                 android:minWidth="64dip"
                 android:layout_gravity="end"
                 android:text="@string/btn_scan_meter" />
+
+            <ImageView
+                android:id="@+id/result_image"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:contentDescription="image result" />
 
         </LinearLayout>
 

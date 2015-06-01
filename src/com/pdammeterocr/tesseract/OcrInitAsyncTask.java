@@ -50,6 +50,9 @@ public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 			return false;
 		}
 		baseApi.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH,LANGUAGE_CODE, TessBaseAPI.OEM_TESSERACT_ONLY);
+		baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
+		baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
+		baseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ");
 		return true;
 	}
 
@@ -71,6 +74,7 @@ public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 		try {
 			this.activity.resumeOCR();
 			progressDialog.dismiss();
+			this.activity.ocrEngine = baseApi;
 		} catch (IllegalArgumentException e) {
 			// Catch "View not attached to window manager" error, and continue
 		}
