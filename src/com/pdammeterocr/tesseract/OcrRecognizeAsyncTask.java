@@ -5,13 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.CaptureActivity;
 import com.pdammeterocr.R;
+
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -52,21 +58,39 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 		try {
 			Rect rect = activity.cameraManager.getFramingRect();
 			resultImage = renderCroppedGreyscaleBitmap(data, width, height, rect.top, rect.left, rect.width(), rect.height());
+			
+			Mat grayMeterMat = new Mat();
+			Mat meterImageMat = new Mat();
+			Mat destination = new Mat(grayMeterMat.rows(), grayMeterMat.cols(), grayMeterMat.type());
+			Utils.bitmapToMat(resultImage, meterImageMat);
+			Imgproc.cvtColor(meterImageMat, grayMeterMat, Imgproc.COLOR_BGR2GRAY);
+			
+			Imgproc.threshold(grayMeterMat, destination, 0, 255, Imgproc.THRESH_OTSU);
+			Bitmap thresImage = resultImage.copy(Bitmap.Config.ARGB_8888, true);
+			Utils.matToBitmap(destination, thresImage);
+			Bitmap ocrimage = thresImage.copy(Config.ARGB_8888, true);
+			
 			File picture = CaptureActivity.getOutputMediaFile(1, false);
 			FileOutputStream fos = new FileOutputStream(picture);
 			resultImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 			fos.close();
 			path = picture.getAbsolutePath();
 			
-			publishProgress("Recognize image");
-			baseApi.setImage(ReadFile.readBitmap(resultImage));
+			FileOutputStream prefos = new FileOutputStream(CaptureActivity.getOutputMediaFile(1, true));
+			ocrimage.compress(Bitmap.CompressFormat.JPEG, 100, prefos);
+			prefos.close();
+			
+//			resultImage = Bitmap.createBitmap(resultImage, resultImage.getWidth(), resultImage.getHeight(), Config.ARGB_8888);
+			
+//			Bitmap ocrimage = resultImage.copy(Config.ARGB_8888, true);
+			this.baseApi.setImage(ReadFile.readBitmap(ocrimage));
 			resultText = baseApi.getUTF8Text();
 
 			// Check for failure to recognize text
 			if (resultText == null || resultText.equals("")) {
-				resultStatus = false;
+			    resultStatus = false;
 				return false;
-			} else {
+			}else{
 				resultStatus = true;
 			}
 			// ocrResult.setCharacterBoundingBoxes(baseApi.getCharacters().getBoxRects());
@@ -75,7 +99,7 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 					"Caught RuntimeException in request to Tesseract. Setting state to CONTINUOUS_STOPPED.");
 			e.printStackTrace();
 			try {
-				baseApi.clear();
+				this.baseApi.clear();
 			} catch (NullPointerException e1) {
 				// Continue
 			}
@@ -94,10 +118,6 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
 
-		activity.imagePath = path;
-		if (baseApi != null) {
-			baseApi.clear();
-		}
 		try {
 			progressDialog.dismiss();
 			if(resultStatus == true)
@@ -113,6 +133,7 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 				
 				RelativeLayout button_layout = (RelativeLayout)activity.findViewById(R.id.button_layout);
 				button_layout.setVisibility(View.INVISIBLE);
+				activity.imagePath = path;
 				activity.resultVisibility = true;
 			}else{
 				activity.mFrame.setVisibility(View.VISIBLE);
@@ -121,7 +142,6 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 			}
 		} catch (IllegalArgumentException e) {
 			// Catch "View not attached to window manager" error, and continue
-			Toast.makeText(activity.getApplication(), e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 	}
 	

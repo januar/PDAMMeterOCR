@@ -8,7 +8,7 @@
     <string name="splash_screen_content_desc">splash image</string>
     <string name="title_activity_capture">CaptureActivity</string>
     <string name="btn_capture">Capture</string>
-    <string name="ocr_label">result</string>
+    <string name="ocr_label">result : </string>
     <string name="btn_done">Done</string>
     <string name="btn_history">History</string>
     <string name="btn_about">Info</string>

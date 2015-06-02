@@ -117,7 +117,6 @@ public class MeterDataActivity extends ActionBarActivity {
 					EditText txt_meter_result = (EditText) findViewById(R.id.txt_meter_result);
 					EditText txt_meter_number = (EditText) findViewById(R.id.txt_meter_number);
 					File imageFile = new File(imagePath);
-					ImageView result_image = (ImageView) findViewById(R.id.result_image);
 					Bitmap image = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
 
 					Result result = new Result(txt_meter_number.getText()
@@ -126,6 +125,9 @@ public class MeterDataActivity extends ActionBarActivity {
 					datasource.saveResult(result);
 					Toast.makeText(activity, "Save success", Toast.LENGTH_SHORT).show();
 					finish();
+				}
+				catch(NullPointerException en){
+					Toast.makeText(activity, "Image not found. Please start scan!", Toast.LENGTH_LONG).show();
 				}
 				catch(Exception e)
 				{
