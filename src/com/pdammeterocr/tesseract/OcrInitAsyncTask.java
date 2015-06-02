@@ -69,7 +69,9 @@ public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 		super.onPostExecute(result);
 
 		try {
-			this.activity.resumeOCR();
+			
+//			this.activity.resumeOCR();
+			this.activity.ocrEngine = this.baseApi;
 			progressDialog.dismiss();
 		} catch (IllegalArgumentException e) {
 			// Catch "View not attached to window manager" error, and continue

@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.pdammeterocr.camera.*;
+import com.pdammeterocr.tesseract.OcrInitAsyncTask;
 import com.pdammeterocr.tesseract.TessOCR;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -60,7 +61,7 @@ public final class CaptureActivity extends Activity {
 
 	private static final String TAG = "CAPTURE ACTIVITY";
 	
-	private TessBaseAPI ocrEngine;
+	public TessBaseAPI ocrEngine;
 	private AsyncTask<Object, String, Boolean> recognizer;
 	private CaptureActivity activity;
 	private Boolean takePicture;
@@ -467,7 +468,7 @@ public final class CaptureActivity extends Activity {
 	    
 	    if (ocrEngine != null) {
 	    	ocrEngine.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
-	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "");
+	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ");
 	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
 	    }
 	    

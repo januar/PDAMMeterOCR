@@ -2,11 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_color"
+    android:gravity="top"
     android:paddingBottom="0dp"
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
-    android:background="@color/main_color"
     tools:context="com.pdammeterocr.AboutActivity" >
 
     <ImageView
@@ -24,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="134dp"
+        android:layout_marginBottom="18dp"
         android:text="@string/about_version"
         android:textColor="@color/status_text" />
 
@@ -32,9 +33,9 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView1"
+        android:layout_above="@+id/textView1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
+        android:layout_marginBottom="5dp"
         android:text="@string/about_copyright"
         android:textColor="@color/status_text" />
 
