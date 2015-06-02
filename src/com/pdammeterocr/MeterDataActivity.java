@@ -157,7 +157,7 @@ public class MeterDataActivity extends ActionBarActivity {
 			}
 		}else if(resultCode == RESULT_OK && requestCode == IntentIntegrator.REQUEST_CODE)
 		{
-			//49374
+			//qrcode return result
 			String contents = data.getStringExtra("SCAN_RESULT");
             String format = data.getStringExtra("SCAN_RESULT_FORMAT");
             EditText txt_meter_number = (EditText)findViewById(R.id.txt_meter_number);

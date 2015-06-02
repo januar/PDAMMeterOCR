@@ -53,42 +53,39 @@ public class CustomAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		View vi = convertView;
-		if(convertView == null)
-		{
+		if (convertView == null) {
 			vi = layoutInflater.inflate(R.layout.rowlayout, null);
 		}
-		
-		TextView text_meter = (TextView)vi.findViewById(R.id.text_meter);
-		TextView text_result = (TextView)vi.findViewById(R.id.text_result);
-		ImageView image_item = (ImageView)vi.findViewById(R.id.image_item);
-		TextView text_date = (TextView)vi.findViewById(R.id.text_date);
-		final CheckBox chk_selected = (CheckBox)vi.findViewById(R.id.chk_selected);
-		
-		if(data.size() > 0)
-		{
+
+		TextView text_meter = (TextView) vi.findViewById(R.id.text_meter);
+		TextView text_result = (TextView) vi.findViewById(R.id.text_result);
+		ImageView image_item = (ImageView) vi.findViewById(R.id.image_item);
+		TextView text_date = (TextView) vi.findViewById(R.id.text_date);
+		final CheckBox chk_selected = (CheckBox) vi
+				.findViewById(R.id.chk_selected);
+
+		if (data.size() > 0) {
 			final Result item = data.get(position);
 			text_meter.setText(" " + item.getMeterNumber());
 			text_result.setText(" " + item.getMeterResult());
 			image_item.setImageBitmap(item.getImage());
 			text_date.setText(item.getDate());
 			chk_selected.setChecked(item.isSelected());
-			if(isShow){
+			if (isShow) {
 				chk_selected.setVisibility(View.VISIBLE);
 			}
-			chk_selected.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				
+
+			chk_selected.setOnClickListener(new View.OnClickListener() {
+
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					if(chk_selected.isChecked()){
-						item.setSelected(true);
-					}else{
-						item.setSelected(false);
-					}
+					CheckBox cb = (CheckBox) v;
+					item.setSelected(cb.isChecked());
 				}
 			});
 		}
-		
+
 		return vi;
 	}
 	

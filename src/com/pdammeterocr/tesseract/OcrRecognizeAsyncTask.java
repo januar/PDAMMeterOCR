@@ -56,6 +56,7 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 		// TODO Auto-generated method stub
 
 		try {
+			// pre processing
 			Rect rect = activity.cameraManager.getFramingRect();
 			resultImage = renderCroppedGreyscaleBitmap(data, width, height, rect.top, rect.left, rect.width(), rect.height());
 			
@@ -79,10 +80,9 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 			FileOutputStream prefos = new FileOutputStream(CaptureActivity.getOutputMediaFile(1, true));
 			ocrimage.compress(Bitmap.CompressFormat.JPEG, 100, prefos);
 			prefos.close();
+			// end pre processing
 			
-//			resultImage = Bitmap.createBitmap(resultImage, resultImage.getWidth(), resultImage.getHeight(), Config.ARGB_8888);
-			
-//			Bitmap ocrimage = resultImage.copy(Config.ARGB_8888, true);
+			//ocr process
 			this.baseApi.setImage(ReadFile.readBitmap(ocrimage));
 			resultText = baseApi.getUTF8Text();
 
@@ -93,7 +93,6 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 			}else{
 				resultStatus = true;
 			}
-			// ocrResult.setCharacterBoundingBoxes(baseApi.getCharacters().getBoxRects());
 		} catch (RuntimeException e) {
 			Log.e("OcrRecognizeAsyncTask",
 					"Caught RuntimeException in request to Tesseract. Setting state to CONTINUOUS_STOPPED.");

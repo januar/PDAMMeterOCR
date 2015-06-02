@@ -346,9 +346,6 @@ public final class CaptureActivity extends Activity {
 				toast.setText(e.getMessage());
 				toast.show();
 			}
-
-//			mPreview.mCamera.release();
-			//mPreview.mCamera.startPreview();
 		}
 	};
 	
@@ -467,10 +464,6 @@ public final class CaptureActivity extends Activity {
 	    
 	    if (ocrEngine != null) {
 	    	ocrEngine.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
-<<<<<<< HEAD
-	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ");
-=======
->>>>>>> a64eb0d9bc363df08f49937359db2f846b8c933e
 	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
 	    	ocrEngine.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ");
 	    }
