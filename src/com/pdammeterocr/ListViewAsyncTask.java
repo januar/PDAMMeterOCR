@@ -8,6 +8,8 @@ import com.pdammeterocr.db.ResultDataSource;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
+// class ini adalah async task untuk mengambil data dari sql lite untuk ditampilkan
+// dalam list view. Data yang ditampilkan adalah data history
 public final class ListViewAsyncTask extends AsyncTask<String, String, Boolean> {
 	private ProgressDialog progressDialog;
 	public HistoryActivity activity;
@@ -16,6 +18,7 @@ public final class ListViewAsyncTask extends AsyncTask<String, String, Boolean> 
 	
 	public ListViewAsyncTask(ProgressDialog progressDialog, HistoryActivity activity, CustomAdapter adapter) {
 		// TODO Auto-generated constructor stub
+		// inisialisasi datasurce dan item lainnya
 		this.progressDialog = progressDialog;
 		this.activity = activity;
 		this.adapter = adapter;
@@ -26,10 +29,10 @@ public final class ListViewAsyncTask extends AsyncTask<String, String, Boolean> 
 	protected Boolean doInBackground(String... params) {
 		// TODO Auto-generated method stub
 		try {
-			datasource.open();
-			List<Result> data = datasource.getAllResult();
-			adapter = new CustomAdapter(activity, data);
-			
+			datasource.open(); // membuka koneksi ke sql lite
+			List<Result> data = datasource.getAllResult(); // mengambil data dari sql lite
+			adapter = new CustomAdapter(activity, data); // data yang diterima di masukkan kedalam adapter list view 
+														 //untuk ditampilkan
 		} catch (Exception e) {
 			// TODO: handle exception
 			return false;

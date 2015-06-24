@@ -8,13 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pdammeterocr.db.Result;
 
+// class ini adalah custom apdater untuk menampilkan list view dari halaman history
+// custom adapter ini berguna untuk membuat list yang sudah ditentukan
 public class CustomAdapter extends BaseAdapter {
 	
 	public Boolean isShow;
@@ -52,6 +52,8 @@ public class CustomAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
+		
+		// menginisialisasi item dalam list dan memberikan nilai dan eventnya
 		View vi = convertView;
 		if (convertView == null) {
 			vi = layoutInflater.inflate(R.layout.rowlayout, null);
@@ -74,7 +76,8 @@ public class CustomAdapter extends BaseAdapter {
 			if (isShow) {
 				chk_selected.setVisibility(View.VISIBLE);
 			}
-
+			
+			// event jika checkbox di list di tekan
 			chk_selected.setOnClickListener(new View.OnClickListener() {
 
 				@Override

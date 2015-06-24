@@ -76,6 +76,8 @@ public final class CaptureActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 		setContentView(R.layout.activity_capture);
+		
+		// inisialisasi loade dari Open CV
 		if(!OpenCVLoader.initDebug())
 		{
 			OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_10, this, mLoaderCallback);
@@ -92,12 +94,11 @@ public final class CaptureActivity extends Activity {
 				finish();
 			}
 		});
+		
 		takePicture = false;
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setIndeterminate(true);
-		//ocrEngine = new TessBaseAPI();
-		//recognizer = new TessOCR(progressDialog, ocrEngine, this);
 		
 		// Create an instance of Camera
 		mCamera = CameraConfiguration.getCameraInstance();
@@ -115,7 +116,9 @@ public final class CaptureActivity extends Activity {
 		 * FrameLayout preview = (FrameLayout)
 		 * findViewById(R.id.camera_preview); preview.addView(mPreview);
 		 */
-
+		
+		// menambahkan event kepada frame di kamere jika frame digeser maka ukurannya akan berubah juga
+		// frame ini adalah kotak yang muncul pada kamera yang merupakan daerah gambar yang akan diproses
 		mFrame.setOnTouchListener(new View.OnTouchListener() {
 			int lastX = -1;
 			int lastY = -1;
@@ -252,6 +255,7 @@ public final class CaptureActivity extends Activity {
 		});
 	}
 	
+	// looder function untuk OpenCV
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
     	@Override
     	public void onManagerConnected(int status){
@@ -287,6 +291,8 @@ public final class CaptureActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	// event untuk menangkap event dari camera jika camera diperintahkan untuk mengambil gambar
+	// event ini sudah tidak digunakan lagi
 	private PictureCallback mPicture = new PictureCallback() {
 
 		@Override
@@ -349,14 +355,18 @@ public final class CaptureActivity extends Activity {
 		}
 	};
 	
+	
+	// event untuk mengambil priver gambar yang ditangkap oleh kamera
+	// event ini digunakan jika pengguna ingin melakukan scan gambar meteran
+	// event diatur melakukan proses jika button capture ditekan
 	private Camera.PreviewCallback cameraPreview = new PreviewCallback() {
-		
 		@Override
 		public void onPreviewFrame(byte[] data, Camera camera) {
 			// TODO Auto-generated method stub
 			try{
-				if(takePicture){
+				if(takePicture){ // button capture di tekan
 					Toast toast = Toast.makeText(getApplication(), "", Toast.LENGTH_LONG);
+					// input stream untuk menyimpan bitmap yang ditangkap oleh kamera
 					File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE, false);
 					if (pictureFile == null) {
 						Log.d(TAG,
@@ -367,10 +377,12 @@ public final class CaptureActivity extends Activity {
 						return;
 					}
 					
+					// mengambil resolusi kamera
 					Point resolution = mPreview.getCameraResolution();
-					
 					imagePath = pictureFile.getAbsolutePath();
-//					recognizer = new TessOCR(progressDialog, ocrEngine, activity, data, resolution.x, resolution.y).execute();
+					// hasil gambar yang ditangkap oleh kamera di proses dan dikirim ke async task untuk dilakukan
+					// pre processing dan pendeteksian OCR.
+					// async task di eksekusi maka akan mucul progress bar di layar perangkat
 					new OcrRecognizeAsyncTask(ocrEngine, activity, progressDialog, data, resolution.x, resolution.y).execute();
 					takePicture = false;
 				}
@@ -438,11 +450,14 @@ public final class CaptureActivity extends Activity {
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_FOCUS) {
 			// Only perform autofocus if user is not holding down the button.
+			// melakukan fungsi auto fokus kamera
 			if (event.getRepeatCount() == 0) {
 				mPreview.requestAutoFocus(500L);
 			}
 			return true;
-		} else if (keyCode == KeyEvent.KEYCODE_BACK) {
+		} else if (keyCode == KeyEvent.KEYCODE_BACK) {// mengecek apakah button back ditekan
+			// jika button back di tekan dan layar dalam posisi menampilkan hasil maka
+			// layar kembali ke kamera untuk pengambilan gambar jika tidak kembali ke halaman meter data
 			if(resultVisibility)
 			{
 				LinearLayout result_view = (LinearLayout)findViewById(R.id.result_view);
@@ -459,6 +474,8 @@ public final class CaptureActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	// method ini dipanggail jika aplikasi kembali dalam keadaan resum
+	// OpenCV dan Tesseract kembali di load
 	public void resumeOCR() {
 	    Log.d(TAG, "resumeOCR()");
 	    
@@ -471,6 +488,8 @@ public final class CaptureActivity extends Activity {
 	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_10, this, mLoaderCallback);
 	}
 	
+	// jika proses selesai dan user ingin kembali ke halaman meter data
+	// hasil scan OCR dan gambar akan di kirim kembali ke halaman meter data
 	@Override
 	public void finish() {
 	  // Prepare data intent 
@@ -494,6 +513,9 @@ public final class CaptureActivity extends Activity {
 		
 		if(ocrEngine == null)
 		{
+			// inisialisasi TessBaseAPI
+			// OCR/tesseract object
+			// proses ini dikerjakan oleh sebuah async task
 			ocrEngine = new TessBaseAPI();
 			new OcrInitAsyncTask(progressDialog, ocrEngine, this).execute();
 		}else{

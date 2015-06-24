@@ -31,14 +31,16 @@ public class HistoryActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_history);
-
+		
+		// menjalankan async task untuk mengambil data history dari sqlite
+		// mucul progress dialog selama proses tersebut
 		progressDialog = new ProgressDialog(this);
 		new ListViewAsyncTask(progressDialog, this, adapter).execute("");
 		
 		ListView list = getListView();
 		list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		list.setOnItemLongClickListener(new OnItemLongClickListener() {
-
+			// set event untuk list view jika list ditekan lama.
 			@SuppressWarnings("null")
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -68,20 +70,21 @@ public class HistoryActivity extends ActionBarActivity {
 		// TODO Auto-generated method stub
 		switch (item.getItemId()) {
 		case R.id.action_delete:
+			// menghapus item list history yang dipilih
 			try {
 				List<Result> index = new ArrayList<Result>();
 				for (Result object : adapter.data) {
 					if(object.isSelected()){
 						index.add(object);
-						datasource.deleteResult(object);
+						datasource.deleteResult(object); // menghapus object dari sqlite
 					}
 				}
 				
 				for (Result ind : index) {
-					adapter.data.remove(ind);
+					adapter.data.remove(ind); // menghapus item dari list view
 				}
 				
-				adapter.notifyDataSetChanged();
+				adapter.notifyDataSetChanged(); // adapter di refresh kembali
 			} catch (Exception e) {
 				// TODO: handle exception
 			}

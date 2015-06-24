@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 
+/*
+ * Entity object dari table dalam SQL Lite yang dibuat sebelumnya*/
 public class Result {
 	private int id;
 	private String meter_number;
@@ -20,6 +22,7 @@ public class Result {
 		// TODO Auto-generated constructor stub
 	}
 	
+	// constructor
 	public Result(int id, String meter_number, String meter_result, String date, byte[] image) {
 		this.id = id;
 		this.meter_number = meter_number;
@@ -28,16 +31,22 @@ public class Result {
 		this.image = image;
 	}
 	
+	// constructor
 	public Result(int id, String meter_number, String meter_result, String date, Bitmap image) {
 		this(id, meter_number, meter_result, date, getBitmapAsByteArray(image));
 	}
 	
+	// constructor
 	@SuppressLint("SimpleDateFormat") 
 	public Result(String meter_number, String meter_result, Bitmap image){
 		this(-1, meter_number, meter_result, "", getBitmapAsByteArray(image));
 		date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
 	}
 	
+	/*
+	 * setter
+	 * getter
+	 * */
 	public int getId(){
 		return id;
 	}
@@ -67,7 +76,7 @@ public class Result {
 	}
 	
 	public Bitmap getImage(){
-		return BitmapFactory.decodeByteArray(image, 0, image.length);
+		return BitmapFactory.decodeByteArray(image, 0, image.length); // gambar dikembalikan dalam bentuk bitmap
 	}
 	public byte[] getImageByte(){
 		return image;
@@ -76,7 +85,7 @@ public class Result {
 		this.image =  getBitmapAsByteArray(image);
 	}
 	
-	public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+	public static byte[] getBitmapAsByteArray(Bitmap bitmap) { // convert bitmap menjadi byte array
 	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	    bitmap.compress(CompressFormat.PNG, 0, outputStream);       
 	    return outputStream.toByteArray();

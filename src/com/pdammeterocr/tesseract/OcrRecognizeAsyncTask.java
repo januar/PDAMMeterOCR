@@ -27,6 +27,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/*
+ * Async task untuk proses pengenalan chractes.
+ * Dimulai dari preproses sampai proses recognize
+ * */
 public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boolean> {
 	private TessBaseAPI baseApi;
 	private CaptureActivity activity;
@@ -57,34 +61,40 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 
 		try {
 			// pre processing
+			// mengcrop gambar dan di grayscale
 			Rect rect = activity.cameraManager.getFramingRect();
 			resultImage = renderCroppedGreyscaleBitmap(data, width, height, rect.top, rect.left, rect.width(), rect.height());
 			
+			// inisialisasi Mat object yang merupkana bitmap object di openCV
 			Mat grayMeterMat = new Mat();
 			Mat meterImageMat = new Mat();
 			Mat destination = new Mat(grayMeterMat.rows(), grayMeterMat.cols(), grayMeterMat.type());
-			Utils.bitmapToMat(resultImage, meterImageMat);
+			Utils.bitmapToMat(resultImage, meterImageMat); // mengubah bitmap ke mat
 			Imgproc.cvtColor(meterImageMat, grayMeterMat, Imgproc.COLOR_BGR2GRAY);
 			
+			// melakukan proses thresholding
 			Imgproc.threshold(grayMeterMat, destination, 0, 255, Imgproc.THRESH_OTSU);
 			Bitmap thresImage = resultImage.copy(Bitmap.Config.ARGB_8888, true);
 			Utils.matToBitmap(destination, thresImage);
 			Bitmap ocrimage = thresImage.copy(Config.ARGB_8888, true);
 			
+			// menyimpan file hasil crop
 			File picture = CaptureActivity.getOutputMediaFile(1, false);
 			FileOutputStream fos = new FileOutputStream(picture);
 			resultImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 			fos.close();
 			path = picture.getAbsolutePath();
 			
+			// menyimpan gambar hasil preprocessing
 			FileOutputStream prefos = new FileOutputStream(CaptureActivity.getOutputMediaFile(1, true));
 			ocrimage.compress(Bitmap.CompressFormat.JPEG, 100, prefos);
 			prefos.close();
 			// end pre processing
 			
-			//ocr process
+			// ocr process
+			// set gambar yang akan di proses oleh tesseract OCR
 			this.baseApi.setImage(ReadFile.readBitmap(ocrimage));
-			resultText = baseApi.getUTF8Text();
+			resultText = baseApi.getUTF8Text(); // hasil disimpan dalam variabel resultTest
 
 			// Check for failure to recognize text
 			if (resultText == null || resultText.equals("")) {
@@ -121,6 +131,7 @@ public final class OcrRecognizeAsyncTask extends AsyncTask<Object, String, Boole
 			progressDialog.dismiss();
 			if(resultStatus == true)
 			{
+				// menampilkan hasil
 				LinearLayout result_view = (LinearLayout)activity.findViewById(R.id.result_view);
 				result_view.setVisibility(View.VISIBLE);
 				TextView resultTextView = (TextView)activity.findViewById(R.id.result_text_view);

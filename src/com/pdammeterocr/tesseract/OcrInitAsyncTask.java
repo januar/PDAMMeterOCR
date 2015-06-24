@@ -9,6 +9,9 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Environment;
 
+/*
+ * async task untuk melakukan inisialisasi awal TessBaseAPi/ tesseract object
+ * */
 public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 
 	private ProgressDialog progressDialog;
@@ -49,8 +52,10 @@ public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 			// download traning data
 			return false;
 		}
+		// set traning data
 		baseApi.init(Environment.getExternalStorageDirectory() + TESSERACT_PATH,LANGUAGE_CODE, TessBaseAPI.OEM_TESSERACT_ONLY);
 		baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
+		// set whitelist chracter and blacklist
 		baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
 		baseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!?@#$%&*()[]{}<>_-+=/.,:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ");
 		return true;
@@ -73,7 +78,6 @@ public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
 
 		try {
 			
-//			this.activity.resumeOCR();
 			this.activity.ocrEngine = this.baseApi;
 			progressDialog.dismiss();
 			this.activity.ocrEngine = baseApi;

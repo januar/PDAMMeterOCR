@@ -37,18 +37,24 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
     
+    // click event of capture meter button
+    // use for move to Meter Data Activity for take meter data
     public void captureCamera(View view)
     {
     	Intent intent = new Intent(this, MeterDataActivity.class);
     	startActivity(intent);
     }
     
+    // click event for history button
+    // use for move to History Activity
     public void historyActivity(View view)
     {
     	Intent intent = new Intent(this, HistoryActivity.class);
     	startActivity(intent);
     }
     
+    // click event of about button
+    // use for move to About activity
     public void aboutActivity(View view) {
 		Intent intent = new Intent(this, AboutActivity.class);
 		startActivity(intent);

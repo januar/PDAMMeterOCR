@@ -14,24 +14,30 @@ public class ResultDataSource {
 
 	private SQLiteDatabase database;
 	private MySQLiteHelper dbHelper;
+	// column dalam tabel history
 	private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
 			MySQLiteHelper.COLUMN_METER_NUMBER,
 			MySQLiteHelper.COLUMN_METER_RESULT,
 			MySQLiteHelper.COLUMN_DATE,
 			MySQLiteHelper.COLUMN_IMAGE};
 
+	//constructor, inisialisasi datasource
 	public ResultDataSource(Context context) {
 		dbHelper = new MySQLiteHelper(context);
 	}
 
+	// method untuk membuka koneksi ke database
 	public void open() throws SQLException {
 		database = dbHelper.getWritableDatabase();
 	}
 
+	// method untuk menutup koneksi ke database
 	public void close() {
 		dbHelper.close();
 	}
 	
+	// method untuk menyimpan history
+	// object Result di convert ke dalam bentuk yang dapat dikenali oleh SQLLite helper
 	public Result saveResult(Result result) {
 		ContentValues values = new ContentValues();
 		values.put(MySQLiteHelper.COLUMN_METER_NUMBER, result.getMeterNumber());
@@ -48,6 +54,7 @@ public class ResultDataSource {
 		return newResult;
 	}
 	
+	// mengambil seluruh isi table history pada sqlite
 	public List<Result> getAllResult() {
 		List<Result> resultList = new ArrayList<Result>();
 
@@ -65,6 +72,7 @@ public class ResultDataSource {
 		return resultList;
 	}
 	
+	// method menghapus item
 	public void deleteResult(Result result) {
 		long id = result.getId();
 		System.out.println("Result deleted with id: " + id);
@@ -72,6 +80,7 @@ public class ResultDataSource {
 				+ " = " + id, null);
 	}
 	
+	// method untuk mengubah object cursor kedalam bentuk Object Result
 	private Result cursorToResult(Cursor cursor) {
 		Result result = new Result();
 		result.setId(cursor.getInt(0));

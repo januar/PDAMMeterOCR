@@ -22,29 +22,34 @@ import android.widget.Toast;
 
 public class MeterDataActivity extends ActionBarActivity {
 	private static int REQUEST_CODE = 21;
-	private Activity activity;
-	private String imagePath;
-	private ResultDataSource datasource;
+	private Activity activity; // use to save this activity for async task
+	private String imagePath; // use to same image path of meter
+	private ResultDataSource datasource; // data source for connect to sql lite database
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_meter_data);
 		this.activity = this;
+		
+		//initialization datasource
 		this.datasource = new ResultDataSource(this);
 		datasource.open();
 		
+		// add event listener for button start scan
 		Button btn_scan_meter = (Button) findViewById(R.id.btn_scan_meter);
 		btn_scan_meter.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				// move to capture activity to take picture of meter and analize it using tesseract
 				Intent capture_activity = new Intent(getApplication(), CaptureActivity.class);
 				startActivityForResult(capture_activity, REQUEST_CODE);
 			}
 		});
 		
+		// add event listener for button scan QR code
 		Button btn_qrcode_scanner = (Button)findViewById(R.id.btn_qrcode_scan);
 		btn_qrcode_scanner.setOnClickListener(new View.OnClickListener() {
 			
@@ -52,9 +57,12 @@ public class MeterDataActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				try {
+					// pindah ke aplikasi QR Code Scanner
 	                IntentIntegrator scanIntegrator = new IntentIntegrator(activity);
 	                scanIntegrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
 	            } catch (Exception e) {    
+	            	// jika aplikasi QR code scanner tidak ditemukan, maka aplikasi akan mentriger 
+	            	// app store untuk mendownload aplikasi
 	                Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
 	                Intent marketIntent = new Intent(Intent.ACTION_VIEW,marketUri);
 	                startActivity(marketIntent);
@@ -62,6 +70,7 @@ public class MeterDataActivity extends ActionBarActivity {
 			}
 		});
 		
+		// menambahkan even lister ke edit text untuk memvalidasi apakah text tidak kosong
 		EditText txt_meter_number = (EditText)findViewById(R.id.txt_meter_number);
 		txt_meter_number.addTextChangedListener(new TextWatcher() {
 			
@@ -85,6 +94,7 @@ public class MeterDataActivity extends ActionBarActivity {
 			}
 		});
 		
+		// menambahkan even lister ke edit text untuk memvalidasi apakah text tidak kosong
         EditText txt_meter_result = (EditText)findViewById(R.id.txt_meter_result);
         txt_meter_result.addTextChangedListener(new TextWatcher() {
 			
@@ -107,6 +117,10 @@ public class MeterDataActivity extends ActionBarActivity {
 			}
 		});
         
+        
+        // menambahkan event listener ke button Save jika proses scan sudah berhasil
+        // fungsi ini akan menyimpan no meter, hasil scan, gambar dan data lainnya ke dalam 
+        // database sqlite yang sudah disediakan.
         Button btn_save = (Button)findViewById(R.id.btn_save);
         btn_save.setOnClickListener(new View.OnClickListener() {
 			
@@ -118,7 +132,9 @@ public class MeterDataActivity extends ActionBarActivity {
 					EditText txt_meter_number = (EditText) findViewById(R.id.txt_meter_number);
 					File imageFile = new File(imagePath);
 					Bitmap image = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-
+					
+					// Result adalah object entity dari table history yang disimpan di sqllite
+					// object ini akan disimpan kedalam sql lite
 					Result result = new Result(txt_meter_number.getText()
 							.toString(), txt_meter_result.getText().toString(),
 							image);
@@ -139,7 +155,11 @@ public class MeterDataActivity extends ActionBarActivity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// method ini dikerjakan jika sebuah activity kembali lagi ke activity ini.
+		// Hanya ada dua request yang diterima oleh method ini yaitu juga activity sebelumnya
+		// berasal dari activity capture camere (REQUEST CODE == 21) atau dari aplikasi QR code scanner
 		if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+			// memproses jika intent berasal dari capture activity
 			if (data.hasExtra("status")) {
 				if (data.getExtras().getBoolean("status")) {
 					String meter = data.getExtras().getString("meter");
@@ -157,7 +177,7 @@ public class MeterDataActivity extends ActionBarActivity {
 			}
 		}else if(resultCode == RESULT_OK && requestCode == IntentIntegrator.REQUEST_CODE)
 		{
-			//qrcode return result
+			// memproses jika intent berasal dari aplikasi qrcode scanner
 			String contents = data.getStringExtra("SCAN_RESULT");
             String format = data.getStringExtra("SCAN_RESULT_FORMAT");
             EditText txt_meter_number = (EditText)findViewById(R.id.txt_meter_number);
@@ -166,6 +186,8 @@ public class MeterDataActivity extends ActionBarActivity {
 		}
 	}
 	
+	// methode untuk memvalidasi edit text apakah tidak kosong
+	// jika semua edit text tidak kosong, maka button save di enable
 	public void check() {
 		Button btn_save = (Button)findViewById(R.id.btn_save);
 		EditText txt_meter_number = (EditText)findViewById(R.id.txt_meter_number);
