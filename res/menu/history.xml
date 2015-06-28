@@ -7,5 +7,11 @@
         app:showAsAction="always"
         android:title="@string/ic_delete"
         />
+    <item android:id="@+id/action_sync"
+        android:icon="@drawable/ic_action_upload" 
+        android:showAsAction="always"
+        app:showAsAction="always"
+        android:title="@string/ic_sync"
+        />
 
 </menu>

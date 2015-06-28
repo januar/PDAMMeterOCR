@@ -14,9 +14,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_METER_RESULT = "meter_result";
 	public static final String COLUMN_IMAGE = "image";
 	public static final String COLUMN_DATE = "date";
+	public static final String COLUMN_SENT = "sent";
 
 	private static final String DATABASE_NAME = "pdammeterocr.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	// Database creation sql statement
 	private static final String DATABASE_CREATE = "create table "
@@ -24,7 +25,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 			+ COLUMN_METER_NUMBER + " text not null, "
 			+ COLUMN_METER_RESULT + " text not null, "
 			+ COLUMN_IMAGE + " blob not null, "
-			+ COLUMN_DATE + " text not null);";
+			+ COLUMN_DATE + " text not null, "
+			+ COLUMN_SENT + " integer);";
 
 	public MySQLiteHelper(Context context)
 	{

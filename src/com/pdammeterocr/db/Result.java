@@ -17,6 +17,7 @@ public class Result {
 	private String date;
 	private byte[] image;
 	private Boolean selected;
+	private Boolean is_sent;
 
 	public Result() {
 		// TODO Auto-generated constructor stub
@@ -97,6 +98,15 @@ public class Result {
 	
 	public void setSelected(Boolean selected) {
 		this.selected = selected;
+	}
+	
+	public Boolean isSent(){
+		return this.is_sent;
+	}
+	
+	public void setSent(Boolean sent)
+	{
+		this.is_sent = sent;
 	}
 
 }

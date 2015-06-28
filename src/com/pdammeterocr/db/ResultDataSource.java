@@ -19,7 +19,8 @@ public class ResultDataSource {
 			MySQLiteHelper.COLUMN_METER_NUMBER,
 			MySQLiteHelper.COLUMN_METER_RESULT,
 			MySQLiteHelper.COLUMN_DATE,
-			MySQLiteHelper.COLUMN_IMAGE};
+			MySQLiteHelper.COLUMN_IMAGE,
+			MySQLiteHelper.COLUMN_SENT};
 
 	//constructor, inisialisasi datasource
 	public ResultDataSource(Context context) {
@@ -44,6 +45,7 @@ public class ResultDataSource {
 		values.put(MySQLiteHelper.COLUMN_METER_RESULT, result.getMeterResult());
 		values.put(MySQLiteHelper.COLUMN_DATE, result.getDate());
 		values.put(MySQLiteHelper.COLUMN_IMAGE, result.getImageByte());
+		values.put(MySQLiteHelper.COLUMN_SENT, 0);
 		long insertId = database.insert(MySQLiteHelper.TABLE_RESULT, null, values);
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_RESULT,
 				allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
@@ -59,17 +61,64 @@ public class ResultDataSource {
 		List<Result> resultList = new ArrayList<Result>();
 
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_RESULT,
-				allColumns, null, null, null, null, MySQLiteHelper.COLUMN_DATE + " DESC");
+				allColumns, null, null, null, null, MySQLiteHelper.COLUMN_ID + " DESC");
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Result result = cursorToResult(cursor);
+//			result.setSent(false);
+//			update(result);
 			resultList.add(result);
 			cursor.moveToNext();
 		}
 		// make sure to close the cursor
 		cursor.close();
 		return resultList;
+	}
+	
+	// mengambil result yang akan dikirim
+	public List<History> getToSent() {
+		List<History> historyList = new ArrayList<History>();
+
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_RESULT,
+				allColumns, MySQLiteHelper.COLUMN_SENT + " = ?", new String[]{String.valueOf(0)},
+				null, null, null);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Result result = cursorToResult(cursor);
+			historyList.add(new History(result));
+			cursor.moveToNext();
+		}
+		// make sure to close the cursor
+		cursor.close();
+		return historyList;
+	}
+	
+	// mengambil result berdasarkan id
+	public Result getById(int id) {
+		Result result = null;
+		
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_RESULT, allColumns, MySQLiteHelper.COLUMN_ID + " = ?", 
+				new String[] {String.valueOf(id)}, null, null, null);
+		
+		cursor.moveToFirst();
+		if(!cursor.isAfterLast()){
+			result = cursorToResult(cursor);
+		}
+		
+		cursor.close();
+		return result;
+	}
+	
+	public void update(Result result) {
+		ContentValues values = new ContentValues();
+		values.put(MySQLiteHelper.COLUMN_METER_NUMBER, result.getMeterNumber());
+		values.put(MySQLiteHelper.COLUMN_METER_RESULT, result.getMeterResult());
+		values.put(MySQLiteHelper.COLUMN_DATE, result.getDate());
+		values.put(MySQLiteHelper.COLUMN_IMAGE, result.getImageByte());
+		values.put(MySQLiteHelper.COLUMN_SENT, (result.isSent() == true)? 1:0);
+		database.update(MySQLiteHelper.TABLE_RESULT, values, MySQLiteHelper.COLUMN_ID + " = " + result.getId(), null);
 	}
 	
 	// method menghapus item
@@ -89,6 +138,7 @@ public class ResultDataSource {
 		byte[] img = cursor.getBlob(4);
 		result.setImage(BitmapFactory.decodeByteArray(img, 0, img.length));
 		result.setDate(cursor.getString(3));
+		result.setSent((cursor.getInt(5) == 0)? false : true);
 		result.setSelected(false);
 		return result;
 	}
